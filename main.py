@@ -6,6 +6,7 @@ import time
 import os
 from flask import Flask, render_template, Response, request
 from camera import VideoCamera
+import time
 
 app = Flask(__name__)
 
@@ -23,7 +24,7 @@ def video_feed():
         room_id = 0
     else:
         room_id = int(room_id)
-
+    exp_id = str(int(time.time()*1000))
     devices = app.config["rooms"][room_id]["devices"]
     return Response(gen(VideoCamera(devices, exp_id)),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
