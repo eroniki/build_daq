@@ -2,11 +2,13 @@ import cv2
 import numpy as np
 import os
 
+
 class VideoCamera(object):
-    def __init__(self, devices):
+    def __init__(self, devices, exp_id):
         # Using OpenCV to capture from device 0. If you have trouble capturing
         # from a webcam, comment the line below out and use a video file
         # instead.
+        self.exp_id = exp_id
         self.cams = list()
         for dev in devices:
             print "Accessing:", dev
@@ -34,7 +36,7 @@ class VideoCamera(object):
         frames = list()
         for cam_id, cam in enumerate(self.cams):
             frame = self.get_frame(cam)
-            self.save_img(cam_id, img_id)
+            self.save_img(frame, cam_id, img_id)
             # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             frame_resized = cv2.resize(frame, (128, 96))
             frames.append(frame_resized)
@@ -42,5 +44,14 @@ class VideoCamera(object):
         ret, jpeg = cv2.imencode('.jpg', frame_montage)
         return jpeg.tobytes()
 
-    def save_img(self, cam_id, img_id):
-        pass
+    def save_img(self, img, cam_id, img_id):
+        data_loc = os.path.join("data/", self.exp_id, str(cam_id))
+        if os.path.isdir(data_loc):
+            # print "folder already exists"
+            pass
+        else:
+            print "create folder"
+            os.makedirs(data_loc)
+        fname = os.path.join(data_loc, str(img_id)+".png")
+        # print fname
+        return cv2.imwrite(fname, img)
