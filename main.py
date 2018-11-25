@@ -17,6 +17,57 @@ def index():
     return render_template('index.html')
 
 
+@app.route("/status/CEARS", methods=["GET"])
+def status_cears():
+    devices = app.config["rooms"][0]["devices"]
+    statement_all = "{n} cameras placed here. <br />".format(n=len(devices))
+    for dev_id, dev in enumerate(devices):
+        if os.path.exists(dev):
+            statement = "Device {dev_id} found. {dev}<br />".format(
+                dev_id=dev_id, dev=dev)
+        else:
+            statement = "Device {dev_id} NOT found. {dev}<br />".format(
+                dev_id=dev_id, dev=dev)
+        statement_all += statement
+    return statement_all
+
+
+@app.route("/status/computer_lab", methods=["GET"])
+def status_computer_lab():
+    devices = app.config["rooms"][1]["devices"]
+    statement_all = "{n} cameras placed here. <br />".format(n=len(devices))
+    for dev_id, dev in enumerate(devices):
+        if os.path.exists(dev):
+            statement = "Device {dev_id} found. {dev}<br />".format(
+                dev_id=dev_id, dev=dev)
+        else:
+            statement = "Device {dev_id} NOT found. {dev}<br />".format(
+                dev_id=dev_id, dev=dev)
+        statement_all += statement
+    return statement_all
+
+
+@app.route("/status", methods=["GET"])
+def status_all():
+    statements = str()
+    for room_id in range(2):
+        print room_id
+        devices = app.config["rooms"][room_id]["devices"]
+        statement_all = "Room Name: {rm}<br />{n} cameras placed here. <br />".format(
+            rm=app.config["rooms"][room_id]["name"], n=len(devices))
+        for dev_id, dev in enumerate(devices):
+            if os.path.exists(dev):
+                statement = "Device {dev_id} found. {dev}<br />".format(
+                    dev_id=dev_id, dev=dev)
+            else:
+                statement = "Device {dev_id} NOT found. {dev}<br />".format(
+                    dev_id=dev_id, dev=dev)
+            statement_all += statement
+
+        statements += statement_all
+    return statements
+
+
 @app.route('/video_feed')
 def video_feed():
     room_id = app.config["room_id"]
