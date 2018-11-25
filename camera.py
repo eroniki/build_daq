@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import os
 
+
 class VideoCamera(object):
     def __init__(self, devices):
         # Using OpenCV to capture from device 0. If you have trouble capturing
