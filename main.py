@@ -9,10 +9,12 @@ from camera import VideoCamera
 
 app = Flask(__name__)
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     app.config["room_id"] = request.args.get('room')
     return render_template('index.html')
+
 
 @app.route('/video_feed')
 def video_feed():
@@ -23,7 +25,7 @@ def video_feed():
         room_id = int(room_id)
 
     devices = app.config["rooms"][room_id]["devices"]
-    return Response(gen(VideoCamera(devices)),
+    return Response(gen(VideoCamera(devices, exp_id)),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
@@ -94,10 +96,11 @@ def parse_json(fname):
         for dev in room["device_list"]:
             dev_ = os.path.join(dev_path, dev)
             dev_list.append(dev_)
-        rooms.append({"name":room["name"],
+        rooms.append({"name": room["name"],
                       "devices": dev_list
-                    })
+                      })
     return rooms
+
 
 if __name__ == '__main__':
     # global devices
