@@ -1,9 +1,18 @@
 <html>
   <head>
     <title>BUILD DAQ CONTROL SYSTEM</title>
+    <script language="JavaScript">
+        window.onbeforeunload = confirmExit;
+        function confirmExit() {
+            return "You have attempted to leave this page. Are you sure?";
+        }
+    </script>
   </head>
   <body>
     <h1>State of the Cameras:</h1>
     <img id="bg" src="{{ url_for('video_feed') }}">
+    <form action="#" method="post" target="_blank">
+      <button type="submit">Stop</button>
+    </form>
   </body>
 </html>

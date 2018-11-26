@@ -38,7 +38,10 @@ class VideoCamera(object):
             frame = self.get_frame(cam)
             self.save_img(frame, cam_id, img_id)
             # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            frame_resized = cv2.resize(frame, (128, 96))
+            try:
+                frame_resized = cv2.resize(frame, (128, 96))
+            except:
+                frame_resized = np.zeros((128, 96, 3))
             frames.append(frame_resized)
         frame_montage = np.concatenate(frames, axis=1)
         ret, jpeg = cv2.imencode('.jpg', frame_montage)
