@@ -6,6 +6,7 @@ import time
 import os
 from flask import Flask, render_template, Response, request
 from camera import VideoCamera
+from pose_detection import pose_detection
 import time
 
 app = Flask(__name__)
@@ -16,10 +17,27 @@ def index():
     app.config["room_id"] = request.args.get('room')
     return render_template('index.html')
 
+@app.route("/pose_detection", methods=["POST", "GET"])
+def pose():
+    pd = pose_detection()
+    exp_id = request.args.get("exp_id")
+    statement = str()
+    for i in range(7):
+        fname = os.path.join("data/", exp_id, str(i)+"/")
+        if os.path.exists(fname):
+            n = len(pd.find_images(fname))
+        else:
+            n = 0
+        statement += "Camera {i}: {n} images found!<br/>".format(i=i, n=n)
+    return statement
 
-@app.route("/status/CEARS", methods=["GET"])
-def status_cears():
-    devices = app.config["rooms"][0]["devices"]
+@app.route("/status/<room_name>", methods=["POST", "GET"])
+def status_cears(room_name):
+    if room_name.lower() == "cears":
+        room_id = 0
+    else:
+        room_id = 1
+    devices = app.config["rooms"][room_id]["devices"]
     statement_all = "{n} cameras placed here. <br />".format(n=len(devices))
     for dev_id, dev in enumerate(devices):
         if os.path.exists(dev):
@@ -32,22 +50,7 @@ def status_cears():
     return statement_all
 
 
-@app.route("/status/computer_lab", methods=["GET"])
-def status_computer_lab():
-    devices = app.config["rooms"][1]["devices"]
-    statement_all = "{n} cameras placed here. <br />".format(n=len(devices))
-    for dev_id, dev in enumerate(devices):
-        if os.path.exists(dev):
-            statement = "Device {dev_id} found. {dev}<br />".format(
-                dev_id=dev_id, dev=dev)
-        else:
-            statement = "Device {dev_id} NOT found. {dev}<br />".format(
-                dev_id=dev_id, dev=dev)
-        statement_all += statement
-    return statement_all
-
-
-@app.route("/status", methods=["GET"])
+@app.route("/status", methods=["POST", "GET"])
 def status_all():
     statements = str()
     for room_id in range(2):
@@ -66,6 +69,16 @@ def status_all():
 
         statements += statement_all
     return statements
+
+
+@app.route('/video/<room_name>', methods=['GET', 'POST'])
+def video(room_name):
+    if room_name.lower() == "cears":
+        app.config["room_id"] = 0
+    else:
+        app.config["room_id"] = 1
+    return render_template('video.html')
+
 
 
 @app.route('/video_feed')
@@ -88,52 +101,6 @@ def gen(camera):
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
         img_id += 1
-# def main(devices):
-#     cams = list()
-#     for dev in devices:
-#         print "Accessing:", dev
-#         cam = cv2.VideoCapture(dev)
-#         cam.set(cv2.CAP_PROP_FPS, 3)
-#         cams.append(cam)
-#         # cv2.namedWindow(dev, cv2.WINDOW_NORMAL)
-#
-#     cv2.namedWindow("imgs")
-#
-#
-#     while(True):
-#         frames = list()
-#         for cam_id, cam in enumerate(cams):
-#             frame = get_frame(cam)
-#             # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-#             frame = cv2.resize(frame, (128, 96))
-#             frames.append(frame)
-#         frame_montage = np.concatenate(frames, axis=1)
-#
-#         cv2.imshow("imgs", frame_montage)
-#
-#         if cv2.waitKey(1) & 0xFF == ord('q'):
-#             break
-#
-#     stop_cameras(cams)
-#
-#     cv2.destroyAllWindows()
-
-
-# def get_frame(cam):
-#     ret, frame = cam.read()
-#     # print ret
-#     if ret is False:
-#         frame = np.zeros((128, 96, 3), dtype=np.uint8)
-#     return frame
-#
-#
-# def stop_cameras(cameras):
-#     for cam in cameras:
-#         stop_camera(cam)
-#
-#
-# def stop_camera(cam):
-#     cam.release()
 
 
 def parse_json(fname):
