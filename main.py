@@ -5,6 +5,8 @@ import sys
 import time
 import os
 from flask import Flask, render_template, Response, request
+from flask import Flask, render_template, Response, request, make_response
+
 from camera import VideoCamera
 from pose_detection import pose_detection
 import time
@@ -30,6 +32,20 @@ def pose():
             n = 0
         statement += "Camera {i}: {n} images found!<br/>".format(i=i, n=n)
     return statement
+
+@app.route("/pose_detection/<exp_id>/<camera_id>/<img_id>")
+def pose(exp_id, camera_id, img_id):
+    pd = pose_detection()
+    fname = os.path.join("data", exp_id, camera_id, img_id+".png")
+    pose = pd.detect_pose(fname)
+    if isinstance(pose, str):
+        return pose
+    else:
+        retval, buffer = cv2.imencode('.png', pose)
+        print buffer.shape
+        response = make_response(buffer.tobytes())
+        response.headers['Content-Type'] = 'image/png'
+    return response
 
 @app.route("/status/<room_name>", methods=["POST", "GET"])
 def status_cears(room_name):
