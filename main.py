@@ -4,7 +4,6 @@ import json
 import sys
 import time
 import os
-from flask import Flask, render_template, Response, request
 from flask import Flask, render_template, Response, request, make_response
 
 from camera import VideoCamera
