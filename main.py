@@ -19,8 +19,8 @@ def index():
     app.config["room_id"] = request.args.get('room')
     return render_template('index.html')
 
-@app.route("/pose_detection", methods=["POST", "GET"])
-def pose():
+@app.route("/check_dataset", methods=["POST", "GET"])
+def check_dataset():
     pd = pose_detection()
     exp_id = request.args.get("exp_id")
     statement = str()
