@@ -47,6 +47,25 @@ def pose(exp_id, camera_id, img_id):
         response.headers['Content-Type'] = 'image/png'
     return response
 
+@app.route("/pose_detection/<exp_id>/<camera_id>")
+def pose_all_images(exp_id, camera_id):
+    pd = pose_detection()
+
+    fname = os.path.join("data/", exp_id, camera_id +"/")
+
+    if os.path.exists(fname):
+        fnames = pd.find_images(fname)
+        fnames.sort()
+        n = len(fname)
+    else:
+        n = 0
+
+    for fname in fnames:
+        pose = pd.detect_pose(fname)
+
+    return "{n} number of images were processed!".format(n=n)
+
+
 @app.route("/status/<room_name>", methods=["POST", "GET"])
 def status_cears(room_name):
     if room_name.lower() == "cears":
