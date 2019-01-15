@@ -8,7 +8,10 @@ from flask import Flask, render_template, Response, request, make_response
 
 from camera import VideoCamera
 from pose_detection import pose_detection
+from utils import utils
+
 import time
+from logging.config import dictConfig
 
 app = Flask(__name__)
 
@@ -108,9 +111,9 @@ def status_all():
 @app.route('/video/<room_name>', methods=['GET', 'POST'])
 def video(room_name):
     if room_name.lower() == "cears":
-        app.config["room_id"] = 0
-    else:
         app.config["room_id"] = 1
+    else:
+        app.config["room_id"] = 0
     return render_template('video.html')
 
 
@@ -127,6 +130,27 @@ def video_feed():
     return Response(gen(VideoCamera(devices, exp_id)),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/list_experiments')
+def list_experiments():
+    u = utils.misc()
+
+    subfolders =  u.list_subfolders("data/*/")
+    experiments = u.list_experiments(subfolders)
+    statement = ""
+    for exp in experiments:
+        date = u.timestamp_to_date(int(exp)/1000 )
+        statement += "{exp} - ({date})<br />".format(exp=exp, date=date)
+
+    return statement
+
+
+@app.route('/delete_experiment/<exp_id>')
+def delete_experiment(exp_id):
+    u = utils.misc()
+    folder = u.experiment_path(exp_id)
+    u.delete_folder(folder)
+
+    return "OK"
 
 def gen(camera):
     img_id = 0
