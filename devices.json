@@ -3,24 +3,25 @@
 	"rooms": [{
 			"name": "computer_lab",
 			"device_list": [
-				"usb-046d_Logitech_Webcam_C930e_23C6957E-video-index0",
-				"usb-046d_Logitech_Webcam_C930e_3B43517E-video-index0",
-				"usb-046d_Logitech_Webcam_C930e_4191517E-video-index0",
-				"usb-046d_Logitech_Webcam_C930e_64FE757E-video-index0",
-				"usb-046d_Logitech_Webcam_C930e_814F417E-video-index0",
-				"usb-046d_Logitech_Webcam_C930e_BF3E417E-video-index0",
-				"usb-046d_Logitech_Webcam_C930e_D3FFA67E-video-index0"
+        "usb-046d_Logitech_Webcam_C930e_8843357E-video-index0",
+        "usb-046d_Logitech_Webcam_C930e_23C6957E-video-index0",
+        "usb-046d_Logitech_Webcam_C930e_4191517E-video-index0",
+        "usb-046d_Logitech_Webcam_C930e_814F417E-video-index0",
+        "usb-046d_Logitech_Webcam_C930e_BF3E417E-video-index0",
+        "usb-046d_Logitech_Webcam_C930e_BD2F957E-video-index0",
+        "usb-046d_Logitech_Webcam_C930e_D3FFA67E-video-index0"
 			]
 		},
 		{
 			"name": "CEARS",
 			"device_list": [
+        "usb-046d_Logitech_Webcam_C930e_3B43517E-video-index0",
+        "usb-046d_Logitech_Webcam_C930e_1A33FD6E-video-index0",
+				"usb-046d_Logitech_Webcam_C930e_64FE757E-video-index0",
         "usb-046d_Logitech_Webcam_C930e_7EBB957E-video-index0",
         "usb-046d_Logitech_Webcam_C930e_845F417E-video-index0",
-        "usb-046d_Logitech_Webcam_C930e_8843357E-video-index0",
         "usb-046d_Logitech_Webcam_C930e_8C8B557E-video-index0",
         "usb-046d_Logitech_Webcam_C930e_BBFF617E-video-index0",
-        "usb-046d_Logitech_Webcam_C930e_BD2F957E-video-index0",
         "usb-046d_Logitech_Webcam_C930e_D047957E-video-index0"
 
 			]
