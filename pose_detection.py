@@ -12,7 +12,7 @@ class pose_detection(object):
         params = dict()
         params["logging_level"] = 3
         params["output_resolution"] = "-1x-1"
-        params["net_resolution"] = "-1x368"
+        params["net_resolution"] = "-1x1072"
         params["model_pose"] = "BODY_25"
         params["alpha_pose"] = 0.6
         params["scale_gap"] = 0.3
@@ -33,9 +33,10 @@ class pose_detection(object):
             return "image not found"
         else:
             joints, output_image = self.openpose.forward(img, display=True)
-            print joints.shape, output_image.shape
+            # print joints.shape, output_image.shape
+            print fname
             with open(fname+".json", 'w') as outfile:
                 json.dump(joints.tolist(), outfile)
-
-            cv2.imwrite(fname+"_output.png", output_image)
+            dirname = os.path.dirname(fname)
+            cv2.imwrite(fname+".jpg", output_image)
             return output_image
