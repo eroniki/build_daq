@@ -138,19 +138,21 @@ def list_experiments():
     experiments = u.list_experiments(subfolders)
     statement = ""
     for exp in experiments:
-        date = u.timestamp_to_date(int(exp)/1000 )
-        statement += "{exp} - ({date})<br />".format(exp=exp, date=date)
-
+        try:
+            date = u.timestamp_to_date(int(exp)/1000 )
+            statement += "{exp} - ({date})<br />".format(exp=exp, date=date)
+        except:
+            print "Skipped"
     return statement
 
-
-@app.route('/delete_experiment/<exp_id>')
-def delete_experiment(exp_id):
-    u = utils.misc()
-    folder = u.experiment_path(exp_id)
-    u.delete_folder(folder)
-
-    return "OK"
+# 
+# @app.route('/delete_experiment/<exp_id>')
+# def delete_experiment(exp_id):
+#     u = utils.misc()
+#     folder = u.experiment_path(exp_id)
+#     u.delete_folder(folder)
+#
+#     return "OK"
 
 def gen(camera):
     img_id = 0
