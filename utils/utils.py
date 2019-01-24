@@ -3,6 +3,9 @@ from glob import glob
 import os
 from datetime import datetime
 from pytz import timezone
+import json
+import hashlib
+
 
 class misc(object):
     """docstring for utils."""
@@ -51,6 +54,33 @@ class misc(object):
         tz = timezone('EST')
         unaware = datetime.fromtimestamp(ts)
         return unaware.replace(tzinfo=tz).strftime('%Y-%m-%d %H:%M:%S')
+
+    @staticmethod
+    def read_json(fname):
+        data = None
+        with open(fname) as file_handler:
+            data = json.load(file_handler)
+
+        return data
+
+    @staticmethod
+    def get_md5hash(foo):
+        return hashlib.md5(foo).hexdigest().upper()
+
+    @staticmethod
+    def parse_rooms(json_data):
+        dev_path = json_data["dev_path"]
+        rooms = list()
+
+        for room_id, room in enumerate(json_data["rooms"]):
+            dev_list = list()
+            for dev in room["device_list"]:
+                dev_ = os.path.join(dev_path, dev)
+                dev_list.append(dev_)
+            rooms.append({"name": room["name"],
+                          "devices": dev_list
+                          })
+        return rooms
 
 if __name__ == '__main__':
     pass

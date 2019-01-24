@@ -56,5 +56,6 @@ class VideoCamera(object):
             print "create folder"
             os.makedirs(data_loc)
         fname = os.path.join(data_loc, str(img_id)+".png")
-        # print fname
-        return cv2.imwrite(fname, img)
+        retval = cv2.imwrite(fname, img)
+        print "{fname} is saved!".format(fname=fname)
+        return retval
