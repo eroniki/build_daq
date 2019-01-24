@@ -1,2 +1,0 @@
-[2019-01-22 14:22:12,844] {/usr/local/lib/python2.7/dist-packages/werkzeug/_internal.py:88} INFO - 127.0.0.1 - - [22/Jan/2019 14:22:12] "GET /check_experiment/1544464263399 HTTP/1.1" 200 -
-[2019-01-22 14:22:37,398] {/usr/local/lib/python2.7/dist-packages/werkzeug/_internal.py:88} INFO -  * Detected change in '/home/immersivemidiaopenposeclone/build_daq/main.py', reloading

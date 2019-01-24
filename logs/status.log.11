@@ -1,4 +1,0 @@
-[2019-01-22 15:43:34,574] {/usr/local/lib/python2.7/dist-packages/werkzeug/_internal.py:88} INFO - 127.0.0.1 - - [22/Jan/2019 15:43:34] "GET /check_experiment/1544464263399?__debugger__=yes&cmd=resource&f=jquery.js HTTP/1.1" 200 -
-[2019-01-22 15:43:34,575] {/usr/local/lib/python2.7/dist-packages/werkzeug/_internal.py:88} INFO - 127.0.0.1 - - [22/Jan/2019 15:43:34] "GET /check_experiment/1544464263399?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
-[2019-01-22 15:43:34,628] {/usr/local/lib/python2.7/dist-packages/werkzeug/_internal.py:88} INFO - 127.0.0.1 - - [22/Jan/2019 15:43:34] "GET /check_experiment/1544464263399?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
-[2019-01-22 15:43:49,102] {/usr/local/lib/python2.7/dist-packages/werkzeug/_internal.py:88} INFO -  * Detected change in '/home/immersivemidiaopenposeclone/build_daq/main.py', reloading
