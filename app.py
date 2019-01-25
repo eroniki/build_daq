@@ -135,9 +135,11 @@ class flask_app(object):
     def index(self):
         return render_template('index.html')
 
+    @flask_login.login_required
     def video(self, room_name):
         return render_template('video.html', user=room_name)
 
+    @flask_login.login_required
     def video_feed(self, room_name):
         if room_name.lower() == "cears":
             room_id = 1
@@ -199,12 +201,14 @@ class flask_app(object):
             statement = "No experiments conducted yet!"
         return statement
 
+    @flask_login.login_required
     def delete_experiment(self, exp_id):
         folder = self.um.experiment_path(exp_id)
         self.um.delete_folder(folder)
 
         return "OK"
 
+    @flask_login.login_required
     def status_room(self, room_name):
         if room_name.lower() == "cears":
             room_id = 1
@@ -225,6 +229,7 @@ class flask_app(object):
             statement_all += statement
         return statement_all
 
+    @flask_login.login_required
     def status_all_rooms(self):
         statements = str()
         for room_id in range(2):
@@ -304,7 +309,8 @@ class flask_app(object):
         return user
 
     def unauthorized_handler(self):
-        return 'Unauthorized user!'
+        # flask.flash('Unauthorized user!')
+        return flask.redirect("/login")
 
 # @app.route("/pose_detection/<exp_id>/<camera_id>/<img_id>")
 # def pose(self, exp_id, camera_id, img_id):
