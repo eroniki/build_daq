@@ -154,6 +154,7 @@ class flask_app(object):
         return Response(self.gen(VideoCamera(devices, exp_id)),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
 
+    @flask_login.login_required
     def test_camera(self, camera):
         dev = list()
         for room in self.rooms:
