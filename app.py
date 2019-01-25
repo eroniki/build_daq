@@ -112,7 +112,7 @@ class flask_app(object):
                               "logn",
                               self.log_n)
 
-        self.app.add_url_rule("/test_camera/<cam_id>",
+        self.app.add_url_rule("/test_camera/<int:camera>",
                               "test_camera",
                               self.test_camera)
 
@@ -131,6 +131,7 @@ class flask_app(object):
 
         self.app.view_functions['log'] = self.log
         self.app.view_functions['log_n'] = self.log_n
+        self.app.view_functions['test_camera'] = self.test_camera
 
     def index(self):
         return render_template('index.html')
@@ -153,6 +154,14 @@ class flask_app(object):
         return Response(self.gen(VideoCamera(devices, exp_id)),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
 
+    def test_camera(self, camera):
+        dev = list()
+        for room in self.rooms:
+            for device in room["devices"]:
+                dev.append(device)
+        return Response(self.gen_testcamera(dev[int(camera)]),
+                        mimetype='multipart/x-mixed-replace; boundary=frame')
+
     def gen(self, camera):
         img_id = 0
         while True:
@@ -160,6 +169,16 @@ class flask_app(object):
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
             img_id += 1
+
+    def gen_testcamera(self, camera):
+        """Video streaming generator function."""
+        cap = cv2.VideoCapture(camera)
+        while True:
+            retval, frame = cap.read()
+            if retval:
+                cv2.imwrite('t.jpg', frame)
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + open('t.jpg', 'rb').read() + b'\r\n')
 
     @flask_login.login_required
     def check_experiment(self, id):
@@ -362,9 +381,6 @@ class flask_app(object):
 #     return "{n} number of images were processed!".format(n=n)
 #
 #
-    def test_camera(self, cam_id):
-        # TODO: Implement this
-        return cam_id
 
     def log(self):
         lines = tailer.tail(open('logs/status.log'), 10)
