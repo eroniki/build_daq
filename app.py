@@ -174,12 +174,14 @@ class flask_app(object):
     def gen_testcamera(self, camera):
         """Video streaming generator function."""
         cap = cv2.VideoCapture(camera)
-        while True:
-            retval, frame = cap.read()
-            if retval:
-                cv2.imwrite('t.jpg', frame)
-                yield (b'--frame\r\n'
-                       b'Content-Type: image/jpeg\r\n\r\n' + open('t.jpg', 'rb').read() + b'\r\n')
+        retval, frame = cap.read()
+        cap.release()
+        if retval:
+            cv2.imwrite('t.jpg', frame)
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + open('t.jpg', 'rb').read() + b'\r\n')
+        else:
+            yield("Problem in camera")
 
     @flask_login.login_required
     def check_experiment(self, id):
