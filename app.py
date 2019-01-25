@@ -288,7 +288,6 @@ class flask_app(object):
     def user_loader(self, email):
         if email not in self.users:
             return
-        print "loader calisti"
 
         user = User()
         user.id = email
