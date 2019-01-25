@@ -9,6 +9,7 @@ import hashlib
 
 class misc(object):
     """docstring for utils."""
+
     def __init__(self):
         super(misc, self).__init__()
 
@@ -64,6 +65,14 @@ class misc(object):
         return data
 
     @staticmethod
+    def dump_json(fname, data, pretty):
+        with open(fname, 'w') as outfile:
+            if pretty:
+                json.dump(data, outfile, indent=4, sort_keys=True)
+            else:
+                json.dump(data, outfile)
+
+    @staticmethod
     def get_md5hash(foo):
         return hashlib.md5(foo).hexdigest().upper()
 
@@ -81,6 +90,11 @@ class misc(object):
                           "devices": dev_list
                           })
         return rooms
+
+    @staticmethod
+    def create_folder(fname):
+        os.makedirs(fname)
+
 
 if __name__ == '__main__':
     pass

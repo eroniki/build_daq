@@ -12,7 +12,7 @@
     <h1>State of the Cameras:</h1>
     <p><font style="bold">Room:</font>{{ user }}</p>
     <img id="bg" src="{{ url_for('video_feed', room_name=user) }}">
-    <form action="#" method="post" target="_blank">
+    <form action="#" method="post" target="_parent">
       <button type="submit">Stop</button>
     </form>
   </body>

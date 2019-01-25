@@ -11,6 +11,7 @@ from flask import Flask, render_template, Response, request, make_response
 import flask_login
 
 from camera import VideoCamera
+import experiment
 from pose_detection import pose_detection
 from utils import utils
 
@@ -116,6 +117,18 @@ class flask_app(object):
                               "test_camera",
                               self.test_camera)
 
+        self.app.add_url_rule("/pose_detection/<exp_id>/<camera_id>/<img_id>",
+                              "pose_img",
+                              self.pose_img)
+
+        self.app.add_url_rule("/pose_detection/<exp_id>/<camera_id>",
+                              "pose_cam",
+                              self.pose_cam)
+
+        self.app.add_url_rule("/pose_detection/<int:exp_id>/<int:ncameras>",
+                              "pose_exp",
+                              self.pose_exp)
+
         self.app.view_functions['index'] = self.index
         self.app.view_functions['video'] = self.video
         self.app.view_functions['video_feed'] = self.video_feed
@@ -132,6 +145,10 @@ class flask_app(object):
         self.app.view_functions['log'] = self.log
         self.app.view_functions['log_n'] = self.log_n
         self.app.view_functions['test_camera'] = self.test_camera
+
+        self.app.view_functions['pose_img'] = self.pose_img
+        self.app.view_functions['pose_cam'] = self.pose_cam
+        self.app.view_functions['pose_exp'] = self.pose_exp
 
     def index(self):
         return render_template('index.html')
@@ -151,7 +168,7 @@ class flask_app(object):
 
         exp_id = str(int(time.time() * 1000))
         devices = self.rooms[room_id]["devices"]
-        return Response(self.gen(VideoCamera(devices, exp_id)),
+        return Response(self.gen(VideoCamera(devices, room_name)),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
 
     @flask_login.login_required
@@ -185,6 +202,8 @@ class flask_app(object):
 
     @flask_login.login_required
     def check_experiment(self, id):
+        exp = experiment.experiment(new_experiment=False, ts=id)
+
         cam_statement = str()
         for i in range(7):
             fname = os.path.join("data/", str(id), "/", str(i) + "/")
@@ -197,8 +216,9 @@ class flask_app(object):
         date = self.um.timestamp_to_date(id / 1000)
         exp = {"timestamp": id,
                "date": date,
-               "camera": cam_statement,
-               "room": "room"}
+               "camera": exp.metadata["number_of_cameras"],
+               "n_images": exp.metadata["number_of_images"],
+               "room": exp.metadata["room"]}
         return render_template('experiment.html', user=exp)
 
     # TODO: Implement this
@@ -330,60 +350,54 @@ class flask_app(object):
         return user
 
     def unauthorized_handler(self):
-        # flask.flash('Unauthorized user!')
         return flask.redirect("/login")
 
-# @app.route("/pose_detection/<exp_id>/<camera_id>/<img_id>")
-# def pose(self, exp_id, camera_id, img_id):
-#     pd = pose_detection()
-#     fname = os.path.join("data", exp_id, camera_id, img_id+".png")
-#     pose = pd.detect_pose(fname)
-#     if isinstance(pose, str):
-#         return pose
-#     else:
-#         retval, buffer = cv2.imencode('.png', pose)
-#         print buffer.shape
-#         response = make_response(buffer.tobytes())
-#         response.headers['Content-Type'] = 'image/png'
-#     return response
+    def pose_img(self, exp_id, camera_id, img_id):
+        pd = pose_detection()
+        fname = os.path.join("data", exp_id, "raw", camera_id, img_id+".png")
+        pose = pd.detect_pose(fname)
+        if isinstance(pose, str):
+            return pose
+        else:
+            retval, buffer = cv2.imencode('.png', pose)
+            print buffer.shape
+            response = make_response(buffer.tobytes())
+            response.headers['Content-Type'] = 'image/png'
+        return response
 
-# @app.route("/pose_detection/<exp_id>/<camera_id>")
-# def pose_all_images(exp_id, camera_id):
-#     pd = pose_detection()
-#
-#     fname = os.path.join("data/", exp_id, camera_id +"/")
-#
-#     if os.path.exists(fname):
-#         fnames = pd.find_images(fname)
-#         fnames.sort()
-#         n = len(fname)
-#     else:
-#         n = 0
-#
-#     for fname in fnames:
-#         pose = pd.detect_pose(fname)
-#
-#     return "{n} number of images were processed!".format(n=n)
-#
-# @app.route("/pose_detection/<int:exp_id>/<int:ncameras>")
-# def pose_all(exp_id, ncameras):
-#     pd = pose_detection()
-#     for camera_id in range(ncameras):
-#         fname = os.path.join("data/", str(exp_id), str(camera_id) +"/")
-#
-#         if os.path.exists(fname):
-#             fnames = pd.find_images(fname)
-#             fnames.sort()
-#             n = len(fname)
-#         else:
-#             n = 0
-#
-#         for fname in fnames:
-#             pose = pd.detect_pose(fname)
-#
-#     return "{n} number of images were processed!".format(n=n)
-#
-#
+    def pose_cam(self, exp_id, camera_id):
+        pd = pose_detection()
+
+        fname = os.path.join("data/", exp_id, "raw", camera_id + "/")
+
+        if os.path.exists(fname):
+            fnames = pd.find_images(fname)
+            fnames.sort()
+            n = len(fname)
+        else:
+            n = 0
+
+        for fname in fnames:
+            pose = pd.detect_pose(fname)
+
+        return "{n} number of images were processed!".format(n=n)
+
+    def pose_exp(self, exp_id, ncameras):
+        pd = pose_detection()
+        for camera_id in range(ncameras):
+            fname = os.path.join("data/", str(exp_id), "raw", str(camera_id) + "/")
+            print fname
+            if os.path.exists(fname):
+                fnames = pd.find_images(fname)
+                fnames.sort()
+                n = len(fname)
+            else:
+                n = 0
+
+            for fname in fnames:
+                pose = pd.detect_pose(fname)
+
+        return "{n} number of images were processed!".format(n=n)
 
     def log(self):
         lines = tailer.tail(open('logs/status.log'), 10)
@@ -411,17 +425,3 @@ class User(flask_login.UserMixin):
 
 if __name__ == '__main__':
     pass
-
-# if __name__ == '__main__':
-#
-#
-#     handler = RotatingFileHandler('logs/status.log', maxBytes=10000, backupCount=99)
-#     formatter = logging.Formatter(
-#         "[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s")
-#     handler.setLevel(logging.DEBUG)
-#     handler.setFormatter(formatter)
-#     app.logger.addHandler(handler)
-#
-#     log = logging.getLogger('werkzeug')
-#     log.setLevel(logging.DEBUG)
-#     log.addHandler(handler)
