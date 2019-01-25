@@ -14,6 +14,7 @@ class VideoCamera(object):
             print "Accessing:", dev
             cam = cv2.VideoCapture(dev)
             cam.set(cv2.CAP_PROP_FPS, 3)
+            cam.set(cv2.CAP_PROP_AUTOFOCUS, 0)
             self.cams.append(cam)
         # If you decide to use video.mp4, you must have this file in the folder
         # as the main.py.
