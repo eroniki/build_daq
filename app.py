@@ -75,9 +75,9 @@ class flask_app(object):
                               "check_experiment",
                               self.check_experiment)
 
-        self.app.add_url_rule("/clone/<int:id>",
-                              "clone",
-                              self.clone)
+        self.app.add_url_rule("/clone_experiment/<int:id>",
+                              "clone_experiment",
+                              self.clone_experiment)
 
         self.app.add_url_rule("/list_experiments",
                               "list_experiments",
@@ -120,7 +120,7 @@ class flask_app(object):
         self.app.view_functions['video'] = self.video
         self.app.view_functions['video_feed'] = self.video_feed
         self.app.view_functions['check_experiment'] = self.check_experiment
-        self.app.view_functions['clone'] = self.clone
+        self.app.view_functions['clone_experiment'] = self.clone_experiment
         self.app.view_functions['list_experiments'] = self.list_experiments
         self.app.view_functions['delete_experiment'] = self.delete_experiment
         self.app.view_functions['status_room'] = self.status_room
@@ -181,7 +181,7 @@ class flask_app(object):
 
     # TODO: Implement this
     @flask_login.login_required
-    def clone(self, id):
+    def clone_experiment(self, id):
         return str(id)
 
     @flask_login.login_required
