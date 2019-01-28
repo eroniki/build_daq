@@ -22,9 +22,10 @@ class VideoCamera(object):
             print "Accessing:", dev
             self.device_ids.append(os.path.basename(dev))
             cam = cv2.VideoCapture(dev)
-            cam.set(cv2.CAP_PROP_FPS, 3)
-            cam.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-            self.cams.append(cam)
+            if cam.isOpened():
+                cam.set(cv2.CAP_PROP_FPS, 3)
+                cam.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+                self.cams.append(cam)
 
             self.img_id[dev] = 0
 
@@ -73,4 +74,6 @@ class VideoCamera(object):
 
         cc = os.path.join("/dev/v4l/by-id", cam_id)
         self.img_id[cc] = img_id
+        self.exp.update_metadata(change_image_number=True,
+                                 n_images=self.img_id)
         return retval
