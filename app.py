@@ -208,7 +208,7 @@ class flask_app(object):
         for i in range(7):
             fname = os.path.join("data/", str(id), "/", str(i) + "/")
             if os.path.exists(fname):
-                n = len(pd.find_images(fname))
+                n = len(self.um.find_images(fname))
             else:
                 n = 0
             cam_statement += "Camera {i}: {n} images found! ".format(i=i, n=n)
@@ -367,11 +367,10 @@ class flask_app(object):
 
     def pose_cam(self, exp_id, camera_id):
         pd = pose_detection()
-
         fname = os.path.join("data/", exp_id, "raw", camera_id + "/")
 
         if os.path.exists(fname):
-            fnames = pd.find_images(fname)
+            fnames = self.um.find_images(fname)
             fnames.sort()
             n = len(fname)
         else:
@@ -389,7 +388,7 @@ class flask_app(object):
                                  "raw", str(camera_id) + "/")
             print fname
             if os.path.exists(fname):
-                fnames = pd.find_images(fname)
+                fnames = self.um.find_images(fname)
                 fnames.sort()
                 n = len(fname)
             else:

@@ -25,10 +25,6 @@ class pose_detection(object):
         params["default_model_folder"] = "/home/immersivemidiaopenposeclone/openpose/models/"
         self.openpose = OpenPose(params)
 
-    @staticmethod
-    def find_images(folder):
-        return glob.glob(folder + "*.png")
-
     def detect_pose(self, fname):
         img = cv2.imread(fname)
         if img is None:

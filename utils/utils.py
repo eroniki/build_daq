@@ -5,6 +5,7 @@ from datetime import datetime
 from pytz import timezone
 import json
 import hashlib
+import glob
 
 
 class misc(object):
@@ -94,6 +95,10 @@ class misc(object):
     @staticmethod
     def create_folder(fname):
         os.makedirs(fname)
+
+    @staticmethod
+    def find_images(folder, ext=".png"):
+        return glob.glob(folder + ext)
 
 
 if __name__ == '__main__':
