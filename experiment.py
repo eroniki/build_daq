@@ -70,7 +70,7 @@ class experiment(object):
         "Check if they exist, if they don't create them one by one"
         for folder in folders:
             exists = self.um.check_folder_exists(folder)
-            if exists == False:
+            if exists is False:
                 self.um.create_folder(folder)
 
     def create_metadata(self, ts, camera_names, room):

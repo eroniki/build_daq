@@ -385,7 +385,8 @@ class flask_app(object):
     def pose_exp(self, exp_id, ncameras):
         pd = pose_detection()
         for camera_id in range(ncameras):
-            fname = os.path.join("data/", str(exp_id), "raw", str(camera_id) + "/")
+            fname = os.path.join("data/", str(exp_id),
+                                 "raw", str(camera_id) + "/")
             print fname
             if os.path.exists(fname):
                 fnames = pd.find_images(fname)

@@ -5,8 +5,10 @@ import numpy as np
 from openpose import OpenPose
 import json
 
+
 class pose_detection(object):
     """docstring for pose_detection."""
+
     def __init__(self):
         super(pose_detection, self).__init__()
         params = dict()

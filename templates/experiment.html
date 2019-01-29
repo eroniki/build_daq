@@ -1,22 +1,35 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Experiment Details</title>
-  </head>
-  <body>
-    <h1>Experiment Details</h1><br />
-    <p><font style="bold">Room:</font>{{ user.room }}</p>
-    <p><font style="bold">Date:</font>{{ user.date }} ({{ user.timestamp }})</p>
-    <p><font style="bold"># Cameras:</font> {{ user.camera }}</p>
-    <hr>
-    <p><font style="bold"># Images:</font></p>
-    {% for key, value in user.n_images.iteritems() %}
-    <p><font style="bold">{{ key|e }}:</font>{{ value|e }}</p>
-    {% endfor %}
-    <hr>
-    <h1>Process</h1>
-    <p><a href= {{ url_for('clone_experiment', id=user.timestamp) }}>Move data to cloud</a></p>
-    <p><a href= {{ url_for('pose_exp', exp_id=user.timestamp, ncameras=3) }}>Pose Detection</a></p>
 
-  </body>
+<head>
+  <title>Experiment Details</title>
+</head>
+
+<body>
+  <h1>Experiment Details</h1><br />
+  <p>
+    <font style="bold">Room:</font>{{ user.room }}
+  </p>
+  <p>
+    <font style="bold">Date:</font>{{ user.date }} ({{ user.timestamp }})
+  </p>
+  <p>
+    <font style="bold"># Cameras:</font> {{ user.camera }}
+  </p>
+  <hr>
+  <p>
+    <font style="bold"># Images:</font>
+  </p>
+  {% for key, value in user.n_images.iteritems() %}
+  <p>
+    <font style="bold">{{ key|e }}:</font>{{ value|e }}
+  </p>
+  {% endfor %}
+  <hr>
+  <h1>Process</h1>
+  <p><a href={{ url_for('clone_experiment', id=user.timestamp) }}>Move data to cloud</a></p>
+  <p><a href={{ url_for('pose_exp', exp_id=user.timestamp, ncameras=3) }}>Pose Detection</a></p>
+  <p><a href={{ url_for('delete_experiment', exp_id=user.timestamp}}>Delete Experiment</a></p>
+</body>
+
 </html>
