@@ -274,7 +274,6 @@ class flask_app(object):
             os.path.realpath(__file__)), exp_folder)[:-1]
         archive_name = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                     "backup", str(exp_id)+".zip")
-        print exp_folder, archive_name
         retval = self.um.compress_folder(exp_folder, archive_name)
         if retval:
             return "Success"
