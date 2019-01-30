@@ -6,6 +6,7 @@ from pytz import timezone
 import json
 import hashlib
 import shutil
+import subprocess
 
 
 class misc(object):
@@ -115,6 +116,11 @@ class misc(object):
             return True
         except Exception as e:
             return False
+
+    @staticmethod
+    def run_process(cmd):
+        result = subprocess.Popen(cmd)
+        return result.communicate()
 
 
 if __name__ == '__main__':

@@ -241,7 +241,10 @@ class flask_app(object):
     # TODO: Implement this
     @flask_login.login_required
     def clone_experiment(self, id):
-        return str(id)
+        archive_name = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                    "backup", str(exp_id)+".zip")
+        cmd = ["rclone", "copy", archive_name, "Team_BUILD:/backup"]
+        self.um.run_process(cmd)
 
     @flask_login.login_required
     def list_experiments(self):
