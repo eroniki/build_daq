@@ -245,7 +245,7 @@ class flask_app(object):
                                     "backup", str(id)+".zip")
         cmd = ["rclone", "copy", archive_name, "Team_BUILD:/backup"]
         retval = self.um.run_process(cmd)
-        return retval
+        return "Process started"
 
     @flask_login.login_required
     def list_experiments(self):
