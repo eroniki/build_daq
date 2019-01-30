@@ -59,9 +59,11 @@ class misc(object):
     @staticmethod
     def read_json(fname):
         data = None
-        with open(fname) as file_handler:
-            data = json.load(file_handler)
-
+        try:
+            with open(fname) as file_handler:
+                data = json.load(file_handler)
+        except IOError as e:
+            return None
         return data
 
     @staticmethod
