@@ -244,7 +244,8 @@ class flask_app(object):
         archive_name = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                     "backup", str(id)+".zip")
         cmd = ["rclone", "copy", archive_name, "Team_BUILD:/backup"]
-        self.um.run_process(cmd)
+        retval = self.um.run_process(cmd)
+        return retval
 
     @flask_login.login_required
     def list_experiments(self):
