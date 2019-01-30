@@ -272,9 +272,10 @@ class flask_app(object):
         exp_folder = self.um.experiment_path(str(exp_id))
         exp_folder = os.path.join(os.path.dirname(
             os.path.realpath(__file__)), exp_folder)
-        archieve_name = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                     "backup", str(exp_id)+".zip")
-        retval = self.um.compress_folder(exp_folder, archieve_name)
+        archive_name = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                    "backup", str(exp_id)+".zip")
+        print exp_folder, archive_name
+        retval = self.um.compress_folder(exp_folder, archive_name)
         if retval:
             return "Success"
         else:
