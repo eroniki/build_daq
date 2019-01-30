@@ -204,6 +204,17 @@ class flask_app(object):
     def check_experiment(self, id):
         exp = experiment.experiment(new_experiment=False, ts=id)
 
+        start_time = time.time()
+        condition = True
+
+        while exp.metadata is None and condition:
+            now = time.time()
+            if now-start_time > 3:
+                condition = False
+                return "Experiment is not found!"
+            exp = experiment.experiment(new_experiment=False, ts=id)
+            time.sleep(0.01)
+
         cam_statement = str()
         for i in range(7):
             fname = os.path.join("data/", str(id), "/", str(i) + "/")
