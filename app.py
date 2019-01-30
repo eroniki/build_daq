@@ -88,6 +88,10 @@ class flask_app(object):
                               "delete_experiment",
                               self.delete_experiment)
 
+        self.app.add_url_rule("/compress_experiment/<exp_id>",
+                              "compress_experiment",
+                              self.compress_experiment)
+
         self.app.add_url_rule("/status_rooms/<room_name>",
                               "status_room",
                               self.status_room)
@@ -136,6 +140,8 @@ class flask_app(object):
         self.app.view_functions['clone_experiment'] = self.clone_experiment
         self.app.view_functions['list_experiments'] = self.list_experiments
         self.app.view_functions['delete_experiment'] = self.delete_experiment
+        self.app.view_functions['compress_experiment'] = self.compress_experiment
+
         self.app.view_functions['status_room'] = self.status_room
         self.app.view_functions['status_rooms'] = self.status_all_rooms
 
@@ -260,6 +266,16 @@ class flask_app(object):
         self.um.delete_folder(folder)
 
         return "OK"
+
+    @flask_login.login_required
+    def compress_experiment(self, exp_id):
+        exp_folder = self.um.experiment_path(str(exp_id))
+        archieve_name = os.path.join("backup", str(exp_id)+".zip")
+        retval = self.um.compress_folder(exp_folder, archieve_name)
+        if retval:
+            return "Success"
+        else:
+            return "Failure"
 
     @flask_login.login_required
     def status_room(self, room_name):
