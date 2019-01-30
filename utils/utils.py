@@ -62,7 +62,7 @@ class misc(object):
         try:
             with open(fname) as file_handler:
                 data = json.load(file_handler)
-        except IOError as e:
+        except Exception as e:
             return None
         return data
 
