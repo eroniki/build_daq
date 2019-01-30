@@ -111,6 +111,7 @@ class misc(object):
             archive_from = os.path.dirname(source)
             archive_to = os.path.basename(source.strip(os.sep))
             print(source, destination, archive_from, archive_to)
+            print(name, format, archieve_from, archieve_to)
             shutil.make_archive(name, format, archive_from, archive_to)
             shutil.move('%s.%s' % (name, format), destination)
             return True
