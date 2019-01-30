@@ -109,7 +109,7 @@ class flask_app(object):
                               "log",
                               self.log)
 
-        self.app.add_url_rule("/log<int:n>",
+        self.app.add_url_rule("/log/<int:n>",
                               "logn",
                               self.log_n)
 
