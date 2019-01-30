@@ -40,7 +40,6 @@ class experiment(object):
 
         else:
             ts = kwargs["ts"]
-            self.load_experiment(ts)
             self.metadata = self.load_experiment(ts)
             print self.metadata
 
