@@ -1,19 +1,25 @@
 <html>
-  <head>
-    <title>BUILD DAQ CONTROL SYSTEM</title>
-    <script language="JavaScript">
-        window.onbeforeunload = confirmExit;
-        function confirmExit() {
-            return "You have attempted to leave this page. Are you sure?";
-        }
-    </script>
-  </head>
-  <body>
-    <h1>State of the Cameras:</h1>
-    <p><font style="bold">Room:</font>{{ user }}</p>
-    <img id="bg" src="{{ url_for('video_feed', room_name=user) }}">
-    <form action="#" method="post" target="_parent">
-      <button type="submit">Stop</button>
-    </form>
-  </body>
+
+<head>
+  <title>BUILD DAQ CONTROL SYSTEM</title>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+  <script language="JavaScript">
+    window.onbeforeunload = confirmExit;
+    function confirmExit() {
+      return "You have attempted to leave this page. Are you sure?";
+    }
+  </script>
+</head>
+
+<body>
+  <h1>State of the Cameras:</h1>
+  <p>
+    <font style="bold">Room:</font>{{ user }}
+  </p>
+  <img id="bg" src="{{ url_for('video_feed', room_name=user) }}">
+  <form action="#" method="post" target="_parent">
+    <button type="submit">Stop</button>
+  </form>
+</body>
+
 </html>

@@ -1,44 +1,48 @@
 <html>
-  <head>
-    <title>BUILD DAQ CONTROL SYSTEM</title>
-  </head>
-  <body>
-    <h1>Control Panel:</h1>
+
+<head>
+  <title>BUILD DAQ CONTROL SYSTEM</title>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
+</head>
+
+<body>
+  <h1>Control Panel:</h1>
 
 
 
-    <form action="/status_rooms/CEARS" method="get" target="_blank">
-      <button type="submit">Status CEARS</button>
-    </form>
+  <form action="/status_rooms/CEARS" method="get" target="_blank">
+    <button type="submit">Status CEARS</button>
+  </form>
 
-    <form action="/status_rooms/computer_lab" method="get" target="_blank">
-      <button type="submit">Status Computer Lab</button>
-    </form>
+  <form action="/status_rooms/computer_lab" method="get" target="_blank">
+    <button type="submit">Status Computer Lab</button>
+  </form>
 
 
-    <form action="/status_rooms" method="get" target="_blank">
-      <button type="submit">Status All Cameras</button>
-    </form>
+  <form action="/status_rooms" method="get" target="_blank">
+    <button type="submit">Status All Cameras</button>
+  </form>
 
-    <hr/>
+  <hr />
 
-    <form action="/video/computer_lab" method="get" target="_blank">
-      <button type="submit">Start Computer Lab</button>
-    </form>
+  <form action="/video/computer_lab" method="get" target="_blank">
+    <button type="submit">Start Computer Lab</button>
+  </form>
 
-    <hr/>
+  <hr />
 
-    <form action="/video/CEARS" method="get" target="_blank">
-      <button type="submit">Start CEARS</button>
-    </form>
+  <form action="/video/CEARS" method="get" target="_blank">
+    <button type="submit">Start CEARS</button>
+  </form>
 
-    <hr/>
+  <hr />
 
-    <form id="list_experiments" action="/list_experiments" method="get" target="_blank">
-      <button type="submit" id="list_experiments_button">List Experiments</button>
-    </form>
+  <form id="list_experiments" action="/list_experiments" method="get" target="_blank">
+    <button type="submit" id="list_experiments_button">List Experiments</button>
+  </form>
 
-<p></p>
-</form>
-  </body>
+  <p></p>
+  </form>
+</body>
+
 </html>
