@@ -271,7 +271,7 @@ class flask_app(object):
     def compress_experiment(self, exp_id):
         exp_folder = self.um.experiment_path(str(exp_id))
         exp_folder = os.path.join(os.path.dirname(
-            os.path.realpath(__file__)), exp_folder)
+            os.path.realpath(__file__)), exp_folder)[:-1]
         archive_name = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                     "backup", str(exp_id)+".zip")
         print exp_folder, archive_name
