@@ -88,6 +88,10 @@ class flask_app(object):
                               "delete_experiment",
                               self.delete_experiment)
 
+        self.app.add_url_rule("/delete_archive/<exp_id>",
+                              "delete_archive",
+                              self.delete_archive)
+
         self.app.add_url_rule("/compress_experiment/<exp_id>",
                               "compress_experiment",
                               self.compress_experiment)
@@ -140,6 +144,8 @@ class flask_app(object):
         self.app.view_functions['clone_experiment'] = self.clone_experiment
         self.app.view_functions['list_experiments'] = self.list_experiments
         self.app.view_functions['delete_experiment'] = self.delete_experiment
+        self.app.view_functions['delete_archive'] = self.delete_archive
+
         self.app.view_functions['compress_experiment'] = self.compress_experiment
 
         self.app.view_functions['status_room'] = self.status_room
@@ -268,6 +274,14 @@ class flask_app(object):
     def delete_experiment(self, exp_id):
         folder = self.um.experiment_path(exp_id)
         self.um.delete_folder(folder)
+
+        return "OK"
+
+    @flask_login.login_required
+    def delete_archive(self, exp_id):
+        archive_name = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                    "backup", str(exp_id)+".zip")
+        self.um.delete_file(archive_name)
 
         return "OK"
 

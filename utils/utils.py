@@ -41,6 +41,14 @@ class misc(object):
             os.rmdir(folder)
 
     @staticmethod
+    def delete_file(file):
+        if os.path.exists(file):
+            os.remove(file)
+            return "Success"
+        else:
+            return "The file does not exist"
+
+    @staticmethod
     def experiment_path(exp_id):
         return os.path.join("data", exp_id, "")
 
@@ -120,7 +128,7 @@ class misc(object):
     @staticmethod
     def run_process(cmd):
         result = subprocess.Popen(cmd)
-        return result.communicate()
+        return result.poll()
 
 
 if __name__ == '__main__':
