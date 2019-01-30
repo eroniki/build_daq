@@ -269,11 +269,13 @@ class flask_app(object):
 
     @flask_login.login_required
     def compress_experiment(self, exp_id):
-        exp_folder = self.um.experiment_path(str(exp_id))
+        exp_folder = self.um.experiment_path(str(exp_id))[:-1]
         exp_folder = os.path.join(os.path.dirname(
-            os.path.realpath(__file__)), exp_folder)[:-1]
+            os.path.realpath(__file__)), exp_folder)
         archive_name = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                     "backup", str(exp_id)+".zip")
+
+        print exp_folder, archive_name
         retval = self.um.compress_folder(exp_folder, archive_name)
         if retval:
             return "Success"
