@@ -242,7 +242,7 @@ class flask_app(object):
     @flask_login.login_required
     def clone_experiment(self, id):
         archive_name = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                    "backup", str(exp_id)+".zip")
+                                    "backup", str(id)+".zip")
         cmd = ["rclone", "copy", archive_name, "Team_BUILD:/backup"]
         self.um.run_process(cmd)
 
