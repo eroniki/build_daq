@@ -237,11 +237,19 @@ class flask_app(object):
             cam_statement += "Camera {i}: {n} images found! ".format(i=i, n=n)
 
         date = self.um.timestamp_to_date(id / 1000)
+        f = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                         "backup", str(id)+".zip")
+        is_archived = self.um.check_file_exists(f)
+        if is_archived:
+            img = "true.png"
+        else:
+            img = "false.png"
         exp = {"timestamp": id,
                "date": date,
                "camera": exp.metadata["number_of_cameras"],
                "n_images": exp.metadata["number_of_images"],
-               "room": exp.metadata["room"]}
+               "room": exp.metadata["room"],
+               "image": img}
         return render_template('experiment.html', user=exp)
 
     # TODO: Implement this

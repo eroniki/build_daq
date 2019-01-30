@@ -30,7 +30,8 @@
   <h1>Process</h1>
   <p><a href={{ url_for('pose_exp', exp_id=user.timestamp, ncameras=3) }}>Pose Detection</a></p>
   <p><a href={{ url_for('delete_experiment', exp_id=user.timestamp) }}>Delete Experiment</a></p>
-  <p><a href={{ url_for('compress_experiment', exp_id=user.timestamp) }}>Create an Archive from Experiment Data</a></p>
+  <p><a href={{ url_for('compress_experiment', exp_id=user.timestamp) }}>Create an Archive from Experiment Data</a> |
+    Already Archived: <img src="{{ url_for('static', filename=user.image) }}" alt="Status"></p>
   <p><a href={{ url_for('delete_archive', exp_id=user.timestamp) }}>Delete Archive</a></p>
   <p><a href={{ url_for('clone_experiment', id=user.timestamp) }}>Move data to cloud</a></p>
 </body>
