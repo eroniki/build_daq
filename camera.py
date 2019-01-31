@@ -41,22 +41,24 @@ class VideoCamera(object):
         return image
 
     def get_all_frames(self, img_id):
-        if len(self.cams) != 0:
-            frames = list()
-            for cam_id, cam in enumerate(self.cams):
-                frame = self.get_frame(cam)
-                self.save_img(frame, self.device_ids[cam_id], img_id)
-                # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                try:
-                    frame_resized = cv2.resize(frame, (128, 96))
-                except:
-                    frame_resized = np.zeros((128, 96, 3))
-                frames.append(frame_resized)
-            frame_montage = np.concatenate(frames, axis=1)
-            ret, jpeg = cv2.imencode('.jpg', frame_montage)
+        if len(self.cams) == 0:
+            img = cv2.imread("task.jpg")
+            ret, jpeg = cv2.imencode('.jpg', img)
             return jpeg.tobytes()
-        else:
-            return "error"
+
+        frames = list()
+        for cam_id, cam in enumerate(self.cams):
+            frame = self.get_frame(cam)
+            self.save_img(frame, self.device_ids[cam_id], img_id)
+            # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            try:
+                frame_resized = cv2.resize(frame, (128, 96))
+            except:
+                frame_resized = np.zeros((128, 96, 3))
+            frames.append(frame_resized)
+        frame_montage = np.concatenate(frames, axis=1)
+        ret, jpeg = cv2.imencode('.jpg', frame_montage)
+        return jpeg.tobytes()
 
     def save_img(self, img, cam_id, img_id):
         data_loc = os.path.join("data/", self.exp_id, "raw", str(cam_id))
