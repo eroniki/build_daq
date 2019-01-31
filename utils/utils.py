@@ -7,6 +7,7 @@ import json
 import hashlib
 import shutil
 import subprocess
+import zipfile
 
 
 class misc(object):
@@ -120,10 +121,24 @@ class misc(object):
             archive_from = os.path.dirname(source)
             archive_to = os.path.basename(source.strip(os.sep))
             shutil.make_archive(name, format, archive_from, archive_to)
+            print '%s.%s' % (name, format), destination
             shutil.move('%s.%s' % (name, format), destination)
             return True
         except Exception as e:
+            print e
             return False
+
+    @staticmethod
+    def compress_folder_zip(source, destination):
+        print source, destination
+        zf = zipfile.ZipFile(destination, "w", allowZip64=True)
+        for dirname, subdirs, files in os.walk(source):
+            zf.write(dirname)
+            for filename in files:
+                zf.write(os.path.join(dirname, filename))
+        zf.close()
+
+        return True
 
     @staticmethod
     def run_process(cmd):

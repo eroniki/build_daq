@@ -93,6 +93,7 @@ class experiment(object):
                     "feature_extraction": False,
                     "feature_matching": False,
                     "triangulation": False,
-                    "state_estimation": False}
+                    "state_estimation": False,
+                    "label": None}
 
         return metadata
