@@ -26,7 +26,9 @@ class VideoCamera(object):
                 cam.set(cv2.CAP_PROP_FPS, 3)
                 cam.set(cv2.CAP_PROP_AUTOFOCUS, 0)
                 self.cams.append(cam)
-
+                print dev, "is opened"
+            else:
+                print "error in", dev
             self.img_id[dev] = 0
 
     def __del__(self):
