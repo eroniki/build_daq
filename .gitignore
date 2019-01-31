@@ -8,6 +8,8 @@ t.jpg
 logs/
 data/
 data
+backup
+backup/
 .vscode/
 users.json
 
