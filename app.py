@@ -264,19 +264,27 @@ class flask_app(object):
     @flask_login.login_required
     def list_experiments(self):
         subfolders = self.um.list_subfolders("data/*/")
-        experiments = self.um.list_experiments(subfolders)
-        statement = ""
-        for exp in experiments:
+        experiment_folders = self.um.list_experiments(subfolders)
+        experiments = list()
+        for exp in experiment_folders:
             try:
                 date = self.um.timestamp_to_date(int(exp) / 1000)
-                statement += "<a href=check_experiment/{exp}>{exp} - ({date})</a><br />".format(
-                    exp=exp, date=date)
+                exp_class = experiment.experiment(new_experiment=False, ts=exp)
+
+                if "label" in exp_class.metadata:
+                    label = exp_class.metadata["label"]
+                else:
+                    label = None
+
+                exp_dict = {"date": date,
+                            "ts": exp,
+                            "label": label
+                            }
+                experiments.append(exp_dict)
             except:
                 print "Skipped"
 
-        if statement == "":
-            statement = "No experiments conducted yet!"
-        return statement
+        return render_template('experiments.html', user=experiments)
 
     @flask_login.login_required
     def delete_experiment(self, exp_id):
