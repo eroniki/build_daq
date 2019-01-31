@@ -42,7 +42,7 @@ class VideoCamera(object):
 
     def get_all_frames(self, img_id):
         if len(self.cams) == 0:
-            img = cv2.imread("task.jpg")
+            img = cv2.imread("static/task.jpg")
             ret, jpeg = cv2.imencode('.jpg', img)
             return jpeg.tobytes()
 
