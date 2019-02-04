@@ -429,7 +429,8 @@ class flask_app(object):
 
         devices = self.rooms[room_id]["devices"]
         camera_name = os.path.basename(devices[camera_id])
-        fname = os.path.join("data", exp_id, "raw", camera_name, str(img_id) + ".png")
+        fname = os.path.join("data", exp_id, "raw",
+                             camera_name, str(img_id) + ".png")
         pose = pd.detect_pose(fname)
         if isinstance(pose, str):
             return pose
