@@ -72,6 +72,10 @@ class flask_app(object):
                               "video_feed",
                               self.video_feed)
 
+        self.app.add_url_rule("/label_experiment/<int:exp_id>",
+                              "label_experiment",
+                              self.label_experiment, methods=['POST'])
+
         self.app.add_url_rule("/check_experiment/<int:id>",
                               "check_experiment",
                               self.check_experiment)
@@ -140,6 +144,8 @@ class flask_app(object):
         self.app.view_functions['index'] = self.index
         self.app.view_functions['video'] = self.video
         self.app.view_functions['video_feed'] = self.video_feed
+
+        self.app.view_functions['label_experiment'] = self.label_experiment
         self.app.view_functions['check_experiment'] = self.check_experiment
         self.app.view_functions['clone_experiment'] = self.clone_experiment
         self.app.view_functions['list_experiments'] = self.list_experiments
@@ -213,6 +219,14 @@ class flask_app(object):
             yield("Problem in camera")
 
     @flask_login.login_required
+    def label_experiment(self, exp_id):
+        exp = experiment.experiment(new_experiment=False, ts=str(exp_id))
+        label = request.form.get('label')
+        exp.update_metadata(change_label=True, label=label)
+
+        return "OK"
+
+    @flask_login.login_required
     def check_experiment(self, id):
         exp = experiment.experiment(new_experiment=False, ts=id)
 
@@ -249,6 +263,7 @@ class flask_app(object):
                "camera": exp.metadata["number_of_cameras"],
                "n_images": exp.metadata["number_of_images"],
                "room": exp.metadata["room"],
+               "label": exp.metadata["label"],
                "image": img}
         return render_template('experiment.html', user=exp)
 

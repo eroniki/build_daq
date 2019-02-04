@@ -39,8 +39,8 @@ class experiment(object):
             self.um.dump_json(fname=json_loc, data=self.metadata, pretty=True)
 
         else:
-            ts = kwargs["ts"]
-            self.metadata = self.load_experiment(ts)
+            self.ts = kwargs["ts"]
+            self.metadata = self.load_experiment(self.ts)
             print self.metadata
 
     def update_metadata(self, **kwargs):
@@ -49,6 +49,10 @@ class experiment(object):
             self.metadata["number_of_images"] = data
             # for cam_id, cam in enumerate(data):
             #     self.metadata["number_of_images"][cam] =  data
+
+        if "change_label" in kwargs:
+            label = kwargs["label"]
+            self.metadata["label"] = label
 
         json_loc = os.path.join("data/", str(self.ts), "experiment.json")
         self.um.dump_json(fname=json_loc, data=self.metadata, pretty=True)

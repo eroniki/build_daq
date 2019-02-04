@@ -15,6 +15,9 @@
     <font style="bold">Date:</font>{{ user.date }} ({{ user.timestamp }})
   </p>
   <p>
+    <font style="bold">Label:</font>{{ user.label }}
+  </p>
+  <p>
     <font style="bold"># Cameras:</font> {{ user.camera }}
   </p>
   <hr>
@@ -28,6 +31,10 @@
   {% endfor %}
   <hr>
   <h1>Process</h1>
+  <form action="{{ url_for('label_experiment', exp_id=user.timestamp) }}" method="POST" target="_blank">
+    Assign/Update label: <input type="text" name="label" value="{{ user.label }}"><br>
+    <input type="submit" value="Submit">
+  </form>
   <p><a href={{ url_for('pose_exp', exp_id=user.timestamp, ncameras=3) }}>Pose Detection</a></p>
   <p><a href={{ url_for('delete_experiment', exp_id=user.timestamp) }}>Delete Experiment</a></p>
   <p><a href={{ url_for('compress_experiment', exp_id=user.timestamp) }}>Create an Archive from Experiment Data</a> |
