@@ -125,7 +125,7 @@ class flask_app(object):
                               "test_camera",
                               self.test_camera)
 
-        self.app.add_url_rule("/pose_detection/<exp_id>/<camera_id>/<img_id>",
+        self.app.add_url_rule("/pose_detection/<exp_id>/<int:camera_id>/<int:img_id>",
                               "pose_img",
                               self.pose_img)
 
@@ -133,7 +133,7 @@ class flask_app(object):
                               "pose_cam",
                               self.pose_cam)
 
-        self.app.add_url_rule("/pose_detection/<int:exp_id>/<int:ncameras>",
+        self.app.add_url_rule("/pose_detection/<int:exp_id>",
                               "pose_exp",
                               self.pose_exp)
 
@@ -420,7 +420,16 @@ class flask_app(object):
 
     def pose_img(self, exp_id, camera_id, img_id):
         pd = pose_detection()
-        fname = os.path.join("data", exp_id, "raw", camera_id, img_id+".png")
+        exp = experiment.experiment(new_experiment=False, ts=exp_id)
+        room_name = exp.metadata["room"]
+        if room_name.lower() == "cears":
+            room_id = 1
+        elif room_name.lower() == "computer_lab":
+            room_id = 0
+
+        devices = self.rooms[room_id]["devices"]
+        camera_name = os.path.basename(devices[camera_id])
+        fname = os.path.join("data", exp_id, "raw", camera_name, str(img_id) + ".png")
         pose = pd.detect_pose(fname)
         if isinstance(pose, str):
             return pose
@@ -433,35 +442,54 @@ class flask_app(object):
 
     def pose_cam(self, exp_id, camera_id):
         pd = pose_detection()
-        fname = os.path.join("data/", exp_id, "raw", camera_id + "/")
+        exp = experiment.experiment(new_experiment=False, ts=exp_id)
+        room_name = exp.metadata["room"]
+        if room_name.lower() == "cears":
+            room_id = 1
+        elif room_name.lower() == "computer_lab":
+            room_id = 0
 
+        devices = self.rooms[room_id]["devices"]
+        camera_name = os.path.basename(devices[int(camera_id)])
+
+        fname = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                             "data", exp_id, "raw", str(camera_name), "")
+        print fname
+        img_files = list()
         if os.path.exists(fname):
-            fnames = self.um.find_images(fname)
-            fnames.sort()
-            n = len(fname)
+            img_files = self.um.find_images(fname)
+            print img_files
+            n = len(img_files)
+            if n == 0:
+                return "No images were found!"
         else:
-            n = 0
+            return "Experiment {id} was not found".format(id=exp_id)
 
-        for fname in fnames:
+        print "{n} number of images were found!".format(n=n)
+
+        img_files.sort()
+        print img_files
+        for fname in img_files:
             pose = pd.detect_pose(fname)
 
         return "{n} number of images were processed!".format(n=n)
 
-    def pose_exp(self, exp_id, ncameras):
-        pd = pose_detection()
-        for camera_id in range(ncameras):
-            fname = os.path.join("data/", str(exp_id),
-                                 "raw", str(camera_id) + "/")
-            print fname
-            if os.path.exists(fname):
-                fnames = self.um.find_images(fname)
-                fnames.sort()
-                n = len(fname)
-            else:
-                n = 0
-
-            for fname in fnames:
-                pose = pd.detect_pose(fname)
+    def pose_exp(self, exp_id):
+        # pd = pose_detection()
+        # for camera_id in range(ncameras):
+        #     fname = os.path.join("data/", str(exp_id),
+        #                          "raw", str(camera_id) + "/")
+        #     print fname
+        #     if os.path.exists(fname):
+        #         fnames = self.um.find_images(fname)
+        #         fnames.sort()
+        #         n = len(fname)
+        #     else:
+        #         n = 0
+        #
+        #     for fname in fnames:
+        #         pose = pd.detect_pose(fname)
+        n = 99999
 
         return "{n} number of images were processed!".format(n=n)
 

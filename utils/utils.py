@@ -1,5 +1,4 @@
-
-from glob import glob
+import glob
 import os
 from datetime import datetime
 from pytz import timezone
@@ -18,7 +17,7 @@ class misc(object):
 
     @staticmethod
     def list_subfolders(folder):
-        return glob(folder)
+        return glob.glob(folder)
 
     @staticmethod
     def list_experiments(folders):
@@ -109,7 +108,7 @@ class misc(object):
         os.makedirs(fname)
 
     @staticmethod
-    def find_images(folder, ext=".png"):
+    def find_images(folder, ext="*.png"):
         return glob.glob(folder + ext)
 
     @staticmethod
