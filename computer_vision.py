@@ -51,3 +51,7 @@ class computer_vision(object):
             y_max += 20
 
         return img[y_min:y_max, x_min:x_max, :]
+
+    @staticmethod
+    def undistort_points(points, K, dist):
+        return cv2.undistortPoints(points, K, dist)
