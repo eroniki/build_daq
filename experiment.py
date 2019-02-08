@@ -54,6 +54,22 @@ class experiment(object):
             label = kwargs["label"]
             self.metadata["label"] = label
 
+        if "change_pd" in kwargs:
+            data = kwargs["pd"]
+            self.metadata["pose_detection"] = data
+
+        if "change_triangulate" in kwargs:
+            data = kwargs["triangulate"]
+            self.metadata["triangulate"] = data
+
+        if "change_feature_extraction" in kwargs:
+            data = kwargs["feature_extraction"]
+            self.metadata["feature_extraction"] = data
+
+        if "change_feature_extraction" in kwargs:
+            data = kwargs["feature_extraction"]
+            self.metadata["feature_extraction"] = data
+
         json_loc = os.path.join("data/", str(self.ts), "experiment.json")
         self.um.dump_json(fname=json_loc, data=self.metadata, pretty=True)
 

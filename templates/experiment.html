@@ -9,38 +9,54 @@
 <body>
   <h1>Experiment Details</h1><br />
   <p>
-    <font style="bold">Room:</font>{{ user.room }}
+    <b>Room:</b>{{ user.room }}
   </p>
   <p>
-    <font style="bold">Date:</font>{{ user.date }} ({{ user.timestamp }})
+    <b>Date:</b>{{ user.date }} ({{ user.timestamp }})
   </p>
   <p>
-    <font style="bold">Label:</font>{{ user.label }}
+    <b>Label:</b>{{ user.label }}
   </p>
   <p>
-    <font style="bold"># Cameras:</font> {{ user.camera }}
+    <b># Cameras:</b> {{ user.camera }}
   </p>
   <hr>
   <p>
-    <font style="bold"># Images:</font>
+    <b># Images:</b>
   </p>
   {% for key, value in user.n_images.iteritems() %}
   <p>
-    <font style="bold">{{ key|e }}:</font>{{ value|e }}
+    <b>{{ key|e }}:</b>{{ value|e }}
   </p>
   {% endfor %}
+
   <hr>
-  <h1>Process</h1>
+  <h1>Administration</h1>
   <form action="{{ url_for('label_experiment', exp_id=user.timestamp) }}" method="POST" target="_blank">
-    Assign/Update label: <input type="text" name="label" value="{{ user.label }}"><br>
-    <input type="submit" value="Submit">
+    Assign/Update label: <input type="text" name="label" value="{{ user.label }}"><input type="submit" value="Submit">
   </form>
-  <p><a href={{ url_for('pose_exp', exp_id=user.timestamp, ncameras=3) }}>Pose Detection</a></p>
-  <p><a href={{ url_for('delete_experiment', exp_id=user.timestamp) }}>Delete Experiment</a></p>
-  <p><a href={{ url_for('compress_experiment', exp_id=user.timestamp) }}>Create an Archive from Experiment Data</a> |
+  <p><a href={{ url_for('delete_experiment', exp_id=user.timestamp) }} target="_blank">Delete Experiment</a></p>
+  <p><a href={{ url_for('compress_experiment', exp_id=user.timestamp) }} target="_blank">Create an Archive from
+      Experiment Data</a> |
     Already Archived: <img src="{{ url_for('static', filename=user.image) }}" alt="Status"></p>
-  <p><a href={{ url_for('delete_archive', exp_id=user.timestamp) }}>Delete Archive</a></p>
-  <p><a href={{ url_for('clone_experiment', id=user.timestamp) }}>Move data to cloud</a></p>
+  <p><a href={{ url_for('delete_archive', exp_id=user.timestamp) }} target="_blank">Delete Archive</a></p>
+  <p><a href={{ url_for('clone_experiment', id=user.timestamp) }} target="_blank">Move data to cloud</a></p>
+  <hr>
+  <h2>Pose Detection</h2>
+  </p>
+  {% for camera_id in range(user.camera): %}
+  <p>
+    <a href={{ url_for('pose_cam', exp_id=user.timestamp, camera_id=camera_id) }} target="_blank">Camera {{camera_id}}</a>
+  </p>
+  {% endfor %}
+  <p><a href={{ url_for('pose_exp', exp_id=user.timestamp) }} target="_blank">Pose Detection for the Whole Experiment</a></p>
+  <hr>
+  <h2>Computer Vision</h2>
+  <p><a href={{ url_for('make_thumbnails', exp_id=user.timestamp) }} target="_blank">Make Thumbnails and Extract
+      Features</a></p>
+  <p><a href={{ url_for('match_people', exp_id=user.timestamp) }} target="_blank">Match People</a></p>
+  <p><a href={{ url_for('triangulate', exp_id=user.timestamp) }} target="_blank">Estimate 3D Locations</a></p>
+
 </body>
 
 </html>

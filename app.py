@@ -141,6 +141,18 @@ class flask_app(object):
                               "pose_exp",
                               self.pose_exp)
 
+        self.app.add_url_rule("/match_people/<int:exp_id>",
+                              "match_people",
+                              self.match_people)
+
+        self.app.add_url_rule("/make_thumbnails/<int:exp_id>",
+                              "make_thumbnails",
+                              self.make_thumbnails)
+
+        self.app.add_url_rule("/triangulate/<int:exp_id>",
+                              "triangulate",
+                              self.triangulate)
+
         self.app.view_functions['index'] = self.index
         self.app.view_functions['video'] = self.video
         self.app.view_functions['video_feed'] = self.video_feed
@@ -167,6 +179,9 @@ class flask_app(object):
         self.app.view_functions['pose_img'] = self.pose_img
         self.app.view_functions['pose_cam'] = self.pose_cam
         self.app.view_functions['pose_exp'] = self.pose_exp
+        self.app.view_functions['match_people'] = self.match_people
+        self.app.view_functions['make_thumbnails'] = self.make_thumbnails
+        self.app.view_functions['triangulate'] = self.triangulate
 
     def index(self):
         return render_template('index.html')
@@ -446,10 +461,11 @@ class flask_app(object):
         camera_name = os.path.basename(devices[camera_id])
         fname = os.path.join("data", exp_id, "raw",
                              camera_name, str(img_id) + ".png")
-        pose = pd.detect_pose(fname)
-        if isinstance(pose, str):
-            return pose
+        retval = pd.detect_pose(fname)
+        if isinstance(retval, str):
+            return retval
         else:
+            pose = retval[0]
             retval, buffer = cv2.imencode('.png', pose)
             print buffer.shape
             response = make_response(buffer.tobytes())
@@ -470,11 +486,17 @@ class flask_app(object):
 
         fname = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "data", exp_id, "raw", str(camera_name), "")
-        print fname
+        fname_result_joint = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                          "data", exp_id, "output", "pose",
+                                          str(camera_name), "")
+
+        fname_result_img = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                        "data", exp_id, "output", "img",
+                                        str(camera_name), "")
+
         img_files = list()
         if os.path.exists(fname):
             img_files = self.um.find_images(fname)
-            print img_files
             n = len(img_files)
             if n == 0:
                 return "No images were found!"
@@ -484,27 +506,48 @@ class flask_app(object):
         print "{n} number of images were found!".format(n=n)
 
         img_files.sort()
-        print img_files
-        for fname in img_files:
-            pose = pd.detect_pose(fname)
+        for idx, fname in enumerate(img_files):
+
+            retval = pd.detect_pose(fname)
+
+            if isinstance(retval, str):
+                continue
+            else:
+                joints = retval[1]
+                # save joints here
+                # self.um.save_json(blabla)
+                exp.update_metadata(change_pd=True, pd={camera_name: idx})
+
+        return "{n} number of images were processed!".format(n=n-1)
+
+    def pose_exp(self, exp_id):
+        pd = pose_detection()
+        exp = experiment.experiment(new_experiment=False, ts=exp_id)
+        ncamera = exp.metadata["number_of_cameras"]
+        room_name = exp.metadata["room"]
+        if room_name.lower() == "cears":
+            room_id = 1
+        elif room_name.lower() == "computer_lab":
+            room_id = 0
+
+        devices = self.rooms[room_id]["devices"]
+        statement = ""
+        for camera_id in range(len(devices)):
+            st = self.pose_cam(str(exp_id), int(camera_id)) + "<br />"
+            statement += st
+        return statement
+
+    def match_people(self, exp_id):
+        n = 99999
 
         return "{n} number of images were processed!".format(n=n)
 
-    def pose_exp(self, exp_id):
-        # pd = pose_detection()
-        # for camera_id in range(ncameras):
-        #     fname = os.path.join("data/", str(exp_id),
-        #                          "raw", str(camera_id) + "/")
-        #     print fname
-        #     if os.path.exists(fname):
-        #         fnames = self.um.find_images(fname)
-        #         fnames.sort()
-        #         n = len(fname)
-        #     else:
-        #         n = 0
-        #
-        #     for fname in fnames:
-        #         pose = pd.detect_pose(fname)
+    def make_thumbnails(self, exp_id):
+        n = 99999
+
+        return "{n} number of images were processed!".format(n=n)
+
+    def triangulate(self, exp_id):
         n = 99999
 
         return "{n} number of images were processed!".format(n=n)
