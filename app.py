@@ -274,7 +274,6 @@ class flask_app(object):
         else:
             img = "false.png"
 
-        pd_camera = exp.metadata["pose_detection"].keys()
         pd_images = exp.metadata["pose_detection"].values()
         user = {"timestamp": id,
                 "date": date,
@@ -284,7 +283,6 @@ class flask_app(object):
                 "label": exp.metadata["label"],
                 "image": img,
                 "exp": exp.metadata,
-                "pose_detection_camera_names": pd_camera,
                 "pose_detection_processed_images": pd_images}
         return render_template('experiment.html', user=user)
 

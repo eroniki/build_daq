@@ -44,10 +44,10 @@
   <hr>
   <h2>Pose Detection</h2>
   </p>
-  {% for camera_name in user.pose_detection_camera_names: %}
+  {% for camera_id in range(user.camera): %}
   <p>
-    {{ camera_name}}:<a href={{ url_for('pose_cam', exp_id=user.timestamp, camera_id=loop.index-1 ) }} target="_blank">
-      {{ user.pose_detection_processed_images[loop.index-1] }}</a>
+    Camera {{ camera_id }}:<a href={{ url_for('pose_cam', exp_id=user.timestamp, camera_id=camera_id ) }} target="_blank">
+      {{ user.pose_detection_processed_images[camera_id] }}</a>
   </p>
   {% endfor %}
   <p><a href={{ url_for('pose_exp', exp_id=user.timestamp) }} target="_blank">Pose Detection for the Whole Experiment</a></p>
