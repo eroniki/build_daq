@@ -273,14 +273,20 @@ class flask_app(object):
             img = "true.png"
         else:
             img = "false.png"
-        exp = {"timestamp": id,
-               "date": date,
-               "camera": exp.metadata["number_of_cameras"],
-               "n_images": exp.metadata["number_of_images"],
-               "room": exp.metadata["room"],
-               "label": exp.metadata["label"],
-               "image": img}
-        return render_template('experiment.html', user=exp)
+
+        pd_camera = exp.metadata["pose_detection"].keys()
+        pd_images = exp.metadata["pose_detection"].values()
+        user = {"timestamp": id,
+                "date": date,
+                "camera": exp.metadata["number_of_cameras"],
+                "n_images": exp.metadata["number_of_images"],
+                "room": exp.metadata["room"],
+                "label": exp.metadata["label"],
+                "image": img,
+                "exp": exp.metadata,
+                "pose_detection_camera_names": pd_camera,
+                "pose_detection_processed_images": pd_images}
+        return render_template('experiment.html', user=user)
 
     # TODO: Implement this
     @flask_login.login_required
