@@ -56,7 +56,7 @@ class experiment(object):
 
         if "change_pd" in kwargs:
             data = kwargs["pd"]
-            self.metadata["pose_detection"] = data
+            self.metadata["pose_detection"].update(data)
 
         if "change_triangulate" in kwargs:
             data = kwargs["triangulate"]

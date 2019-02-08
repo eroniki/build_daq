@@ -32,9 +32,9 @@ class pose_detection(object):
         else:
             joints, output_image = self.openpose.forward(img, display=True)
             # print joints.shape, output_image.shape
-            print fname
-            with open(fname+".json", 'w') as outfile:
-                json.dump(joints.tolist(), outfile)
-            dirname = os.path.dirname(fname)
-            cv2.imwrite(fname+".jpg", output_image)
-            return output_image
+            #print fname
+            #with open(fname+".json", 'w') as outfile:
+            #    json.dump(joints.tolist(), outfile)
+            #dirname = os.path.dirname(fname)
+            #cv2.imwrite(fname+".jpg", output_image)
+            return output_image, joints
