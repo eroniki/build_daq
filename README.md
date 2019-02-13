@@ -73,6 +73,7 @@ The documentation is located [here](docs/utils.md).
 ## Pose Detection Class
 
 ## Camera Class
-
+The documentation of the camera module and its contents are automatically generated from the docstrings of the classes and the functions in it.
+The documentation is located [here](docs/camera.md).
 # Contribution
 If you would like to contribute to this project, please make sure you read and understand the contribution workflow.
