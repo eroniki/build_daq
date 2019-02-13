@@ -1,3 +1,9 @@
+"""
+This module contains a class which is used for video capturing purposes.
+
+The VideoCamera class contains all the functions and utilities needed in the
+actual image acquisition process.
+"""
 import cv2
 import numpy as np
 import os
@@ -6,9 +12,7 @@ import experiment
 
 class VideoCamera(object):
     def __init__(self, devices, room_name):
-        # Using OpenCV to capture from device 0. If you have trouble capturing
-        # from a webcam, comment the line below out and use a video file
-        # instead.
+        """Init"""
         self.cams = list()
         self.exp = experiment.experiment(new_experiment=True,
                                          camera_names=devices,
@@ -32,6 +36,11 @@ class VideoCamera(object):
             self.img_id[dev] = 0
 
     def __del__(self):
+        """Delete object to release the cameras.
+
+        By having this property of the class, the cameras are turned off after
+        the webpage is closed.
+        """
         for cam in self.cams:
             cam.release()
 
@@ -39,10 +48,20 @@ class VideoCamera(object):
                                  n_images=self.img_id)
 
     def get_frame(self, cam):
+        """Given a cam object, read one image and return it."""
         success, image = cam.read()
         return image
 
     def get_all_frames(self, img_id):
+        """
+        Collect images from all the cameras.
+
+        This function's role is 3-folds:
+        1. Checks if we have at least 1 camera attached to the system.
+        Otherwise, the system reports the problem.
+        2. Captures frames from all the cameras and saves it.
+        3. Creates a montage from the images and returns it to the REST server.
+        """
         if len(self.cams) == 0:
             img = cv2.imread("static/task.jpg")
             ret, jpeg = cv2.imencode('.jpg', img)
@@ -63,6 +82,14 @@ class VideoCamera(object):
         return jpeg.tobytes()
 
     def save_img(self, img, cam_id, img_id):
+        """
+        Save an image to a file.
+
+        1. Checks if the folder exists. If it doesn't exists, creates it.
+        1. Constructs the image file name from _cam_id_ _img_id_
+        1. Saves the image to the file.
+        1. Updates the metadata of the experiment for REST API.
+        """
         data_loc = os.path.join("data/", self.exp_id, "raw", str(cam_id))
         if os.path.isdir(data_loc):
             # print "folder already exists"
