@@ -62,14 +62,17 @@ The main controller of the code lay in __main.py__ file. This python script crea
 The basic User Interface is created by using Flask, a web development tool for Python. 
 
 All the necessary tools and classes were implemeted in this class, which reside in __app.py__ module.
-
+The documentation of the computer_vision class is automatically generated from the docstrings of the classes and the functions in it.
+The documentation is located [here](docs/app.md).
 ## Utility Class
 The documentation of the utility class is automatically generated from the docstrings of the classes and the functions in it.
 The documentation is located [here](docs/utils.md).
 ## Experiment Class
-
+The documentation of the experiment class is automatically generated from the docstrings of the classes and the functions in it.
+The documentation is located [here](docs/experiment.md).
 ## Computer Vision Class
-
+The documentation of the computer_vision class is automatically generated from the docstrings of the classes and the functions in it.
+The documentation is located [here](docs/computer_vision.md).
 ## Pose Detection Class
 
 ## Camera Class

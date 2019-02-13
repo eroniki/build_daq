@@ -1,3 +1,9 @@
+"""
+This module contains a class which contains the metadata of the experiments.
+
+The experiment class contains all the functions and utilities needed for
+containing experiment metadata.
+"""
 import os
 import json
 import time
@@ -5,10 +11,22 @@ from utils import utils
 
 
 class experiment(object):
-    """docstring for experiment."""
-    # def __init__(self, ts, new_experiment, camera_names, room):
+    """
+    This module contains a class providing the metadata of the experiments.
+
+    The experiment class contains all the functions and utilities needed for
+    containing experiment metadata.
+    """
 
     def __init__(self, new_experiment=True, **kwargs):
+        """
+        Initialize a metadata from the saved metadata or create a new one.
+
+        This function creates a new metadata file if the _new_experiment_ is
+        set to true with default values.
+        If _new_experiment_ is set to false, the metadata for the experiment is
+        read from the file.
+        """
         super(experiment, self).__init__()
         self.um = utils.misc()
         self.subfolders = ["raw",
@@ -44,6 +62,7 @@ class experiment(object):
             print self.metadata
 
     def update_metadata(self, **kwargs):
+        """Update metadata with the given keyword arguments."""
         if "change_image_number" in kwargs:
             data = kwargs["n_images"]
             self.metadata["number_of_images"] = data
@@ -74,25 +93,27 @@ class experiment(object):
         self.um.dump_json(fname=json_loc, data=self.metadata, pretty=True)
 
     def load_experiment(self, ts):
+        """Load metadata from the the json file."""
         json_loc = os.path.join("data/", str(ts), "experiment.json")
         metadata = self.um.read_json(json_loc)
         return metadata
 
     def create_folders(self, ts):
-        """Create necessary folders needed for each experiment"""
+        """Create necessary folders needed for each experiment."""
 
-        "Create folder list for the experiment"
+        # Create folder list for the experiment
         folders = list()
         for subfolder in self.subfolders:
             folders.append(os.path.join("data/", str(ts), subfolder))
 
-        "Check if they exist, if they don't create them one by one"
+        # Check if they exist, if they don't create them one by one
         for folder in folders:
             exists = self.um.check_folder_exists(folder)
             if exists is False:
                 self.um.create_folder(folder)
 
     def create_metadata(self, ts, camera_names, room):
+        """Create a metadata with default values."""
         json_loc = os.path.join("data/", str(ts), "experiment.json")
 
         ncamera = len(camera_names)

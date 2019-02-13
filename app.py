@@ -1,3 +1,9 @@
+"""
+This module contains a class to create the REST API.
+
+The flask_app class contains all the functions and utilities needed to provide
+the REST API.
+"""
 import numpy as np
 import cv2
 import json
@@ -21,7 +27,12 @@ import tailer
 
 
 class flask_app(object):
-    """docstring for flask_app."""
+    """
+    This module contains a class to create the REST API.
+
+    The flask_app class contains all the functions and utilities needed to provide
+    the REST API.
+    """
 
     def __init__(self, key):
         super(flask_app, self).__init__()
@@ -52,14 +63,17 @@ class flask_app(object):
         self.create_endpoints()
 
     def load_users(self):
+        """Load users for authorization purposes from the json file."""
         return self.um.read_json("users.json")
 
     def load_rooms(self):
+        """Load rooms for authorization purposes from the json file."""
         devices_data = self.um.read_json("devices.json")
         rooms = self.um.parse_rooms(devices_data)
         return rooms
 
     def create_endpoints(self):
+        """Create API endpoints."""
         self.app.add_url_rule("/",
                               "index",
                               self.index)
@@ -184,14 +198,17 @@ class flask_app(object):
         self.app.view_functions['triangulate'] = self.triangulate
 
     def index(self):
+        """Render the homepage."""
         return render_template('index.html')
 
     @flask_login.login_required
     def video(self, room_name):
+        """Render the video page."""
         return render_template('video.html', user=room_name)
 
     @flask_login.login_required
     def video_feed(self, room_name):
+        """Run the cameras in a room."""
         if room_name.lower() == "cears":
             room_id = 1
         elif room_name.lower() == "computer_lab":
@@ -206,6 +223,7 @@ class flask_app(object):
 
     @flask_login.login_required
     def test_camera(self, camera):
+        """Test the camera and return the image."""
         dev = list()
         for room in self.rooms:
             for device in room["devices"]:
@@ -214,6 +232,7 @@ class flask_app(object):
                         mimetype='multipart/x-mixed-replace; boundary=frame')
 
     def gen(self, camera):
+        """Camera generator for the actual tests."""
         img_id = 0
         while True:
             frame = camera.get_all_frames(img_id)
@@ -222,7 +241,7 @@ class flask_app(object):
             img_id += 1
 
     def gen_testcamera(self, camera):
-        """Video streaming generator function."""
+        """Camera generator for the test_camera endpoint."""
         cap = cv2.VideoCapture(camera)
         retval, frame = cap.read()
         cap.release()
@@ -235,6 +254,7 @@ class flask_app(object):
 
     @flask_login.login_required
     def label_experiment(self, exp_id):
+        """Create/Update the label of an experiment."""
         exp = experiment.experiment(new_experiment=False, ts=str(exp_id))
         label = request.form.get('label')
         exp.update_metadata(change_label=True, label=label)
@@ -243,6 +263,7 @@ class flask_app(object):
 
     @flask_login.login_required
     def check_experiment(self, id):
+        """Provide details of an experiment."""
         exp = experiment.experiment(new_experiment=False, ts=id)
 
         start_time = time.time()
@@ -286,9 +307,9 @@ class flask_app(object):
                 "pose_detection_processed_images": pd_images}
         return render_template('experiment.html', user=user)
 
-    # TODO: Implement this
     @flask_login.login_required
     def clone_experiment(self, id):
+        """Clone experiment to the cloud."""
         archive_name = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                     "backup", str(id)+".zip")
         cmd = ["rclone", "copy", archive_name, "Team_BUILD:/backup"]
@@ -297,6 +318,7 @@ class flask_app(object):
 
     @flask_login.login_required
     def list_experiments(self):
+        """List all the experiments."""
         subfolders = self.um.list_subfolders("data/*/")
         experiment_folders = self.um.list_experiments(subfolders)
         experiments = list()
@@ -322,6 +344,7 @@ class flask_app(object):
 
     @flask_login.login_required
     def delete_experiment(self, exp_id):
+        """Delete an experiment with the given id."""
         folder = self.um.experiment_path(exp_id)
         self.um.delete_folder(folder)
 
@@ -329,6 +352,7 @@ class flask_app(object):
 
     @flask_login.login_required
     def delete_archive(self, exp_id):
+        """Delete the zip file."""
         archive_name = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                     "backup", str(exp_id)+".zip")
         self.um.delete_file(archive_name)
@@ -337,6 +361,7 @@ class flask_app(object):
 
     @flask_login.login_required
     def compress_experiment(self, exp_id):
+        """Compress the whole data corresponding to an experiment."""
         exp_folder = self.um.experiment_path(str(exp_id))[:-1]
         exp_folder = os.path.join(os.path.dirname(
             os.path.realpath(__file__)), exp_folder)
@@ -352,6 +377,7 @@ class flask_app(object):
 
     @flask_login.login_required
     def status_room(self, room_name):
+        """Check the status of a room."""
         if room_name.lower() == "cears":
             room_id = 1
         elif room_name.lower() == "computer_lab":
@@ -373,6 +399,7 @@ class flask_app(object):
 
     @flask_login.login_required
     def status_all_rooms(self):
+        """Check the status of all rooms."""
         statements = str()
         for room_id in range(2):
             devices = self.rooms[room_id]["devices"]
@@ -391,6 +418,7 @@ class flask_app(object):
         return statements
 
     def login(self):
+        """Login to the system."""
         if flask.request.method == 'GET':
             return '''
                    <form action='login' method='POST'>
@@ -420,14 +448,17 @@ class flask_app(object):
         return 'Bad login'
 
     def logout(self):
+        """Logout from the system."""
         flask_login.logout_user()
         return 'Logged out'
 
     @flask_login.login_required
     def protected():
+        """Show logged username."""
         return 'Logged in as: ' + flask_login.current_user.id
 
     def user_loader(self, email):
+        """Check if the user in the user.json file."""
         if email not in self.users:
             return
 
@@ -436,6 +467,7 @@ class flask_app(object):
         return user
 
     def request_loader(self, request):
+        """Handle each request."""
         email = request.form.get('email')
         if email not in self.users:
             return
@@ -450,9 +482,11 @@ class flask_app(object):
         return user
 
     def unauthorized_handler(self):
+        """If the user is unauthorized, direct him/her to the login page."""
         return flask.redirect("/login")
 
     def pose_img(self, exp_id, camera_id, img_id):
+        """Employ pose detection on a single image."""
         pd = pose_detection()
         exp = experiment.experiment(new_experiment=False, ts=exp_id)
         room_name = exp.metadata["room"]
@@ -477,6 +511,10 @@ class flask_app(object):
         return response
 
     def pose_cam(self, exp_id, camera_id):
+        """
+        Employ pose_detection on the all images with a given experiment and
+        the camera id.
+        """
         pd = pose_detection()
         exp = experiment.experiment(new_experiment=False, ts=exp_id)
         room_name = exp.metadata["room"]
@@ -525,6 +563,10 @@ class flask_app(object):
         return "{n} number of images were processed!".format(n=n-1)
 
     def pose_exp(self, exp_id):
+        """
+        Given an experiment id to employ pose_detection on the whole images
+        collected from all the cameras.
+        """
         pd = pose_detection()
         exp = experiment.experiment(new_experiment=False, ts=exp_id)
         ncamera = exp.metadata["number_of_cameras"]
@@ -542,21 +584,25 @@ class flask_app(object):
         return statement
 
     def match_people(self, exp_id):
+        """Match people based on feature matching algorithm."""
         n = 99999
 
         return "{n} number of images were processed!".format(n=n)
 
     def make_thumbnails(self, exp_id):
+        """Create a thumbnail from an image, which contains only one person."""
         n = 99999
 
         return "{n} number of images were processed!".format(n=n)
 
     def triangulate(self, exp_id):
+        """Triangulate people's locations."""
         n = 99999
 
         return "{n} number of images were processed!".format(n=n)
 
     def log(self):
+        """Return the system logs. 10 lines."""
         lines = tailer.tail(open('logs/status.log'), 10)
 
         statement = ""
@@ -566,6 +612,7 @@ class flask_app(object):
         return statement
 
     def log_n(self, n):
+        """Return n number of lines from the system logs."""
         lines = tailer.tail(open('logs/status.log'), n)
 
         statement = ""
