@@ -64,7 +64,8 @@ The basic User Interface is created by using Flask, a web development tool for P
 All the necessary tools and classes were implemeted in this class, which reside in __app.py__ module.
 
 ## Utility Class
-
+The documentation of the utility class is automatically generated from the docstrings of the classes and the functions in it.
+The documentation is located [here](docs/utils.md).
 ## Experiment Class
 
 ## Computer Vision Class
