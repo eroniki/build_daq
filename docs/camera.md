@@ -3,6 +3,11 @@
 VideoCamera(self, devices, room_name)
 ```
 
+VideoCamera class contains image acquisition system.
+
+VideoCamera class contains all the functions and utilities needed in the
+actual image acquisition process.
+
 ## get_frame
 ```python
 VideoCamera.get_frame(self, cam)

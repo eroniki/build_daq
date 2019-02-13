@@ -11,8 +11,14 @@ import experiment
 
 
 class VideoCamera(object):
+    """
+    VideoCamera class contains image acquisition system.
+
+    VideoCamera class contains all the functions and utilities needed in the
+    actual image acquisition process.
+    """
+
     def __init__(self, devices, room_name):
-        """Init"""
         self.cams = list()
         self.exp = experiment.experiment(new_experiment=True,
                                          camera_names=devices,
