@@ -51,9 +51,8 @@ The workflow of the intrinsic calibration is summarized as below:
 2. After providing the necessary information to the application, it runs a chessboard detection algorithm on the whole set of photos.
 3. After chessboard detection, the photos in which the chessboard is not detected are rejected.
 4. Setting the calibration process.
-   - Choose this
-   - Choose that
-   - Choose this
+   - Hit `Options`
+   - Choose `Radial Distortion` as `3 Coefficients`
 5. Calibrate!
 6. Delete the photos with high reprojection error, until the mean of reprojection error goes down .75 pixels. (0.75 pixels is a the golden standard, this is a *de-facto* standard widely accepted in the Computer Vision society.)
 7. Recalibrate!
@@ -90,9 +89,7 @@ The workflow of the extrinsics calibration is similar to that of intrinsics:
 2. After providing the necessary information to the application, it runs a chessboard detection algorithm on the whole set of photos.
 3. After chessboard detection, the photos in which the chessboard is not detected are rejected.
 4. Setting the calibration process.
-   - Choose this
-   - Choose that
-   - Choose this
+   - Hit `Use Fixed Intrinsics` and `Load Intrinsics` from the workspace. (The same intrinsics for the both of the cameras!)
 5. Calibrate!
 6. Delete the photos with high reprojection error, until the mean of reprojection error goes down .75 pixels. (0.75 pixels is a the golden standard, this is a *de-facto* standard widely accepted in the Computer Vision society.)
 7. Recalibrate!
