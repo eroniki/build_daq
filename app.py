@@ -274,13 +274,18 @@ class flask_app(object):
         else:
             img = "false.png"
 
+        try:
+            label = exp.metadata["label"]
+        except:
+            label = None
+
         pd_images = exp.metadata["pose_detection"].values()
         user = {"timestamp": id,
                 "date": date,
                 "camera": exp.metadata["number_of_cameras"],
                 "n_images": exp.metadata["number_of_images"],
                 "room": exp.metadata["room"],
-                "label": exp.metadata["label"],
+                "label": label,
                 "image": img,
                 "exp": exp.metadata,
                 "pose_detection_processed_images": pd_images}
