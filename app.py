@@ -568,7 +568,9 @@ class flask_app(object):
                 fname_img = "data/{exp_id}/output/pose/img/{f}".format(exp_id=exp_id, f=fname_img)  # noqa: E501
                 fname_json = "data/{exp_id}/output/pose/pose/{f}".format(exp_id=exp_id, f=fname_json)  # noqa: E501
                 cv2.imwrite(fname_img, img)
-                self.um.dump_json(fname=fname_json, data=joints.tolist(), True)
+                self.um.dump_json(fname=fname_json,
+                                  data=joints.tolist(),
+                                  pretty=True)
                 exp.update_metadata(change_pd=True, pd={camera_name: idx})
 
         return "{n} number of images were processed!".format(n=n-1)
