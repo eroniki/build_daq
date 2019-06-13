@@ -534,13 +534,13 @@ class flask_app(object):
         fname = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "data", exp_id, "raw", str(camera_name), "")
         fname_result_joint = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                          "data", exp_id, "output", "pose",
+                                          "data", exp_id, "output", "pose", "pose",
                                           str(camera_name))
 
         self.um.create_folder(fname_result_joint)
 
         fname_result_img = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                        "data", exp_id, "output", "img",
+                                        "data", exp_id, "output", "pose", "img",
                                         str(camera_name))
 
         self.um.create_folder(fname_result_img)
