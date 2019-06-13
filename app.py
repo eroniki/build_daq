@@ -534,12 +534,16 @@ class flask_app(object):
         fname = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "data", exp_id, "raw", str(camera_name), "")
         fname_result_joint = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                          "data", exp_id, "output", "pose",
-                                          str(camera_name), "")
+                                          "data", exp_id, "output", "pose", "pose",
+                                          str(camera_name))
+
+        self.um.create_folder(fname_result_joint)
 
         fname_result_img = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                        "data", exp_id, "output", "img",
-                                        str(camera_name), "")
+                                        "data", exp_id, "output", "pose", "img",
+                                        str(camera_name))
+
+        self.um.create_folder(fname_result_img)
 
         img_files = list()
         if os.path.exists(fname):
@@ -561,8 +565,19 @@ class flask_app(object):
                 continue
             else:
                 joints = retval[1]
+                img = retval[0]
                 # save joints here
-                # self.um.save_json(blabla)
+                fname_img = os.path.basename(fname)
+                fname_json = fname_img + ".json"
+                fname_img = "{folder}/{f}".format(folder=fname_result_img,
+                                                  f=fname_img)
+                fname_json = "{folder}/{f}".format(folder=fname_result_joint,
+                                                   f=fname_json)
+
+                cv2.imwrite(fname_img, img)
+                self.um.dump_json(fname=fname_json,
+                                  data=joints.tolist(),
+                                  pretty=True)
                 exp.update_metadata(change_pd=True, pd={camera_name: idx})
 
         return "{n} number of images were processed!".format(n=n-1)
