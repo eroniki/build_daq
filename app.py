@@ -537,9 +537,14 @@ class flask_app(object):
                                           "data", exp_id, "output", "pose",
                                           str(camera_name))
 
+        self.um.utils.create_folder(fname_result_joint)
+
         fname_result_img = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                         "data", exp_id, "output", "img",
                                         str(camera_name))
+
+        self.um.utils.create_folder(fname_result_img)
+
 
         img_files = list()
         if os.path.exists(fname):
