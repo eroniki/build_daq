@@ -543,8 +543,7 @@ class flask_app(object):
                                         "data", exp_id, "output", "img",
                                         str(camera_name))
 
-        self.um.utils.create_folder(fname_result_img)
-
+        self.um.create_folder(fname_result_img)
 
         img_files = list()
         if os.path.exists(fname):
@@ -574,7 +573,7 @@ class flask_app(object):
                                                   f=fname_img)
                 fname_json = "{folder}/{f}".format(folder=fname_result_joint,
                                                    f=fname_json)
-                
+
                 cv2.imwrite(fname_img, img)
                 self.um.dump_json(fname=fname_json,
                                   data=joints.tolist(),
