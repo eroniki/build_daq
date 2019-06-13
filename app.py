@@ -535,11 +535,11 @@ class flask_app(object):
                              "data", exp_id, "raw", str(camera_name), "")
         fname_result_joint = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                           "data", exp_id, "output", "pose",
-                                          str(camera_name), "")
+                                          str(camera_name))
 
         fname_result_img = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                         "data", exp_id, "output", "img",
-                                        str(camera_name), "")
+                                        str(camera_name))
 
         img_files = list()
         if os.path.exists(fname):
@@ -565,8 +565,11 @@ class flask_app(object):
                 # save joints here
                 fname_img = os.path.basename(fname)
                 fname_json = fname_img + ".json"
-                fname_img = "data/{exp_id}/output/pose/img/{f}".format(exp_id=exp_id, f=fname_img)  # noqa: E501
-                fname_json = "data/{exp_id}/output/pose/pose/{f}".format(exp_id=exp_id, f=fname_json)  # noqa: E501
+                fname_img = "{folder}/{f}".format(folder=fname_result_img,
+                                                  f=fname_img)
+                fname_json = "{folder}/{f}".format(folder=fname_result_joint,
+                                                   f=fname_json)
+                
                 cv2.imwrite(fname_img, img)
                 self.um.dump_json(fname=fname_json,
                                   data=joints.tolist(),
