@@ -529,6 +529,7 @@ class flask_app(object):
             room_id = 0
 
         devices = self.rooms[room_id]["devices"]
+        devices.sort()
         camera_name = os.path.basename(devices[int(camera_id)])
 
         fname = os.path.join(os.path.dirname(os.path.realpath(__file__)),
@@ -536,14 +537,19 @@ class flask_app(object):
         fname_result_joint = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                           "data", exp_id, "output", "pose", "pose",
                                           str(camera_name))
-
-        self.um.create_folder(fname_result_joint)
+        try:
+            self.um.create_folder(fname_result_joint)
+        except:
+            pass
 
         fname_result_img = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                         "data", exp_id, "output", "pose", "img",
                                         str(camera_name))
 
-        self.um.create_folder(fname_result_img)
+        try:
+            self.um.create_folder(fname_result_img)
+        except:
+            pass
 
         img_files = list()
         if os.path.exists(fname):
@@ -578,7 +584,8 @@ class flask_app(object):
                 self.um.dump_json(fname=fname_json,
                                   data=joints.tolist(),
                                   pretty=True)
-                exp.update_metadata(change_pd=True, pd={camera_name: idx})
+                camera_name_full = "/dev/v4l/by-id/" + camera_name
+                exp.update_metadata(change_pd=True, pd={camera_name_full: idx})
 
         return "{n} number of images were processed!".format(n=n-1)
 
