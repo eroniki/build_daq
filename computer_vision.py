@@ -35,7 +35,7 @@ class computer_vision(object):
         return kpts, descs
 
     @staticmethod
-    def match_meaturs(desc1, desc2):
+    def match_features(desc1, desc2):
         """Match extracted descriptors, return good matching ones."""
         bf = cv2.BFMatcher(cv2.NORM_HAMMING)
         matches = bf.knnMatch(desc1, desc2, k=2)    # typo fixed
