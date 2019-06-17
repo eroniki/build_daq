@@ -529,7 +529,7 @@ class flask_app(object):
             room_id = 0
 
         devices = self.rooms[room_id]["devices"]
-        camera_name = devices[int(camera_id)]
+        camera_name = os.path.basename(devices[int(camera_id)])
 
         fname = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "data", exp_id, "raw", str(camera_name), "")
@@ -578,7 +578,8 @@ class flask_app(object):
                 self.um.dump_json(fname=fname_json,
                                   data=joints.tolist(),
                                   pretty=True)
-                exp.update_metadata(change_pd=True, pd={camera_name: idx})
+                camera_name_full = "/dev/v4l/by-id/" + camera_name
+                exp.update_metadata(change_pd=True, pd={camera_name_full: idx})
 
         return "{n} number of images were processed!".format(n=n-1)
 
