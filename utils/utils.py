@@ -14,6 +14,7 @@ import hashlib
 import shutil
 import subprocess
 import zipfile
+from collections import OrderedDict
 
 
 class misc(object):
@@ -87,7 +88,7 @@ class misc(object):
         data = None
         try:
             with open(fname) as file_handler:
-                data = json.load(file_handler)
+                data = json.load(file_handler, object_pairs_hook=OrderedDict)
         except Exception as e:
             return None
         return data
