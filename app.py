@@ -529,7 +529,7 @@ class flask_app(object):
             room_id = 0
 
         devices = self.rooms[room_id]["devices"]
-        camera_name = os.path.basename(devices[int(camera_id)])
+        camera_name = devices[int(camera_id)]
 
         fname = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                              "data", exp_id, "raw", str(camera_name), "")
