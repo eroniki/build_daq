@@ -120,6 +120,8 @@ class experiment(object):
         number_of_images = dict()
         pose_detection = dict()
 
+        camera_names.sort()
+
         for camera in camera_names:
             number_of_images[camera] = 0
             pose_detection[camera] = 0
