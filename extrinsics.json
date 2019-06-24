@@ -1,0 +1,46 @@
+{
+    "extrinsic_params": [
+        {
+            "left": "usb-046d_Logitech_Webcam_C930e_8843357E-video-index0",
+            "right": "usb-046d_Logitech_Webcam_C930e_23C6957E-video-index0",
+            "matrix": [
+                [
+                    838.105,
+                    0.0,
+                    715.433
+                ],
+                [
+                    0.0,
+                    837.696,
+                    453.005
+                ],
+                [
+                    0.0,
+                    0.0,
+                    1.0
+                ]
+            ]
+        },
+        {
+            "left": "usb-046d_Logitech_Webcam_C930e_8843357E-video-index0",
+            "right": "usb-046d_Logitech_Webcam_C930e_4191517E-video-index0",
+            "matrix": [
+                [
+                    838.105,
+                    0.0,
+                    715.433
+                ],
+                [
+                    0.0,
+                    837.696,
+                    453.005
+                ],
+                [
+                    0.0,
+                    0.0,
+                    1.0
+                ]
+            ]
+        }
+    ]
+}
