@@ -20,7 +20,7 @@ from camera import VideoCamera
 import experiment
 from pose_detection import pose_detection
 from utils import utils
-from tf.tf import TFNode, TFTree, Transform
+from tf.tf import TFTree
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -48,15 +48,14 @@ class flask_app(object):
         self.login_manager.user_loader(self.user_loader)
         self.login_manager.unauthorized_handler(self.unauthorized_handler)
         self.login_manager.request_loader(self.request_loader)
-        
+
         self.extrinsic_dict = self.load_extrinsics()
-        self.tree = TFTree()
+        self.xform_tree = TFTree()
 
         for elem in self.extrinsic_dict["extrinsic_params"]:
-            self.tree.add_transform(parent=elem["left"],
+            self.xform_tree.add_transform(parent=elem["left"],
                                     child=elem["right"],
                                     xform=elem["matrix"])
-
 
         handler = RotatingFileHandler(
             'logs/status.log', maxBytes=10000, backupCount=99)

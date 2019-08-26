@@ -52,7 +52,7 @@ class TFTree(object):
         if frame not in self.nodes:
             raise Exception("frame is not part of the tf tree")
         if target == frame:
-            return Transform(0, 0, 0, 0, 0, 0, 1)
+            return np.eye(4)
 
         parent_node = self.get_parent()
 
@@ -123,7 +123,7 @@ class TFNode(object):
     def from_dict(cls, indict):
         parent, xform = indict['parent'], indict['transform']
         parent = TFNode(parent, None, None) if parent else None
-        xform = Transform.from_dict(xform) if xform else None
+        # xform = Transform.from_dict(xform) if xform else None
         return cls(indict['name'], parent, xform)
 
     @property
@@ -131,55 +131,3 @@ class TFNode(object):
         if self.transform is None:
             return np.identity(4)
         return self.transform
-
-
-class Transform(object):
-    def __init__(self, matrix):
-        self.matrix = matrix
-
-#     @classmethod
-#     def from_matrix(cls, mat):
-#         x, y, z = mat[0:3, -1]
-#         qx, qy, qz, qw = tft.quaternion_from_matrix(mat)
-#         return cls(x, y, z, qx, qy, qz, qw)
-
-#     @classmethod
-#     def from_position_euler(cls, x, y, z, roll, pitch, yaw):
-#         qx, qy, qz, qw = tft.quaternion_from_euler(roll, pitch, yaw)
-#         return cls(x, y, z, qx, qy, qz, qw)
-
-#     @classmethod
-#     def from_dict(cls, indict):
-#         x, y, z = indict['xyz']
-#         qx, qy, qz, qw = indict['xyzw']
-#         return cls(x, y, z, qx, qy, qz, qw)
-
-#     @property
-#     def matrix(self):
-#         out = self.rotation_matrix
-#         out[0, -1] = self.x
-#         out[1, -1] = self.y
-#         out[2, -1] = self.z
-#         return out
-
-#     @property
-#     def rotation_matrix(self):
-#         return tft.quaternion_matrix(self.quaternion)
-
-#     @property
-#     def position(self):
-#         return self.x, self.y, self.z
-
-#     @property
-#     def euler(self):
-#         return tft.euler_from_quaternion(self.quaternion)
-
-#     @property
-#     def quaternion(self):
-#         return (self.qx, self.qy, self.qz, self.qw)
-
-#     def inverse(self):
-#         return Transform.from_matrix(np.linalg.inv(self.matrix))
-
-#     def to_dict(self):
-#         return {'xyz': list(self.position), 'xyzw': list(self.quaternion)}
