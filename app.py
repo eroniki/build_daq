@@ -21,6 +21,7 @@ import experiment
 from pose_detection import pose_detection
 from utils import utils
 from tf.tf import TFTree
+from skeleton.skeleton import people, skeleton
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -180,6 +181,10 @@ class flask_app(object):
                               "triangulate",
                               self.triangulate)
 
+        self.app.add_url_rule("/test/<int:exp_id>/<int:frame_id>",
+                              "test",
+                              self.skeletons)
+
         self.app.view_functions['index'] = self.index
         self.app.view_functions['video'] = self.video
         self.app.view_functions['video_feed'] = self.video_feed
@@ -209,6 +214,8 @@ class flask_app(object):
         self.app.view_functions['match_people'] = self.match_people
         self.app.view_functions['make_thumbnails'] = self.make_thumbnails
         self.app.view_functions['triangulate'] = self.triangulate
+        self.app.view_functions['test'] = self.skeletons
+
 
     def index(self):
         """Render the homepage."""
@@ -634,6 +641,27 @@ class flask_app(object):
         n = 99999
 
         return "{n} number of images were processed!".format(n=n)
+
+    def skeletons(self, exp_id, frame_id):
+        """Test skeletons."""
+
+        exp = experiment.experiment(new_experiment=False, ts=exp_id)
+        exp_path = self.um.experiment_path(str(exp_id))
+        pose_detection_result = "output/pose/pose"
+        cam_name = os.path.basename("/dev/v4l/by-id/usb-046d_Logitech_Webcam_C930e_23C6957E-video-index0")  # noqa: E501
+        fname = os.path.join(exp_path,
+                             pose_detection_result,
+                             cam_name,
+                             str(frame_id)+".png.json")
+
+        if self.um.check_file_exists(fname):
+            json_data = self.um.read_json(fname)
+            people_in_frame = people(json_data, frame_id)
+            npeople = str(len(people_in_frame.list))
+        else:
+            npeople = 0
+
+        return "Number of people found: {n}".format(n=npeople)
 
     def triangulate(self, exp_id):
         """Triangulate people's locations."""
