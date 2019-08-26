@@ -20,6 +20,7 @@ from camera import VideoCamera
 import experiment
 from pose_detection import pose_detection
 from utils import utils
+from tf.tf import TFTree
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -48,6 +49,14 @@ class flask_app(object):
         self.login_manager.unauthorized_handler(self.unauthorized_handler)
         self.login_manager.request_loader(self.request_loader)
 
+        self.extrinsic_dict = self.load_extrinsics()
+        self.xform_tree = TFTree()
+
+        for elem in self.extrinsic_dict["extrinsic_params"]:
+            self.xform_tree.add_transform(parent=elem["left"],
+                                    child=elem["right"],
+                                    xform=elem["matrix"])
+
         handler = RotatingFileHandler(
             'logs/status.log', maxBytes=10000, backupCount=99)
         formatter = logging.Formatter(
@@ -61,6 +70,10 @@ class flask_app(object):
         log.addHandler(handler)
 
         self.create_endpoints()
+
+    def load_extrinsics(self):
+        """Load extrinsic matrices from a json file."""
+        return self.um.read_json("extrinsics.json")
 
     def load_users(self):
         """Load users for authorization purposes from the json file."""
