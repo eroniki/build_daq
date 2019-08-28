@@ -43,15 +43,25 @@
   <p><a href={{ url_for('clone_experiment', id=user.timestamp) }} target="_blank">Move data to cloud</a></p>
   <hr>
   <h2>Pose Detection</h2>
-  </p>
   {% for camera_id in range(user.camera): %}
-  <p>
     Camera {{ camera_id }}:<a href={{ url_for('pose_cam', exp_id=user.timestamp, camera_id=camera_id ) }} target="_blank">
       {{ user.pose_detection_processed_images[camera_id] }}</a>
-  </p>
   {% endfor %}
-  <p><a href={{ url_for('pose_exp', exp_id=user.timestamp) }} target="_blank">Pose Detection for the Whole Experiment</a></p>
+  <p>
+    <a href={{ url_for('pose_exp', exp_id=user.timestamp) }} target="_blank">Pose Detection for the Whole Experiment</a>
+  </p>
   <hr>
+  <h2>Draw Matchstick-People</h2>
+  {% for camera_id in range(user.camera): %}
+    Camera {{ camera_id }}: <a href={{ url_for('draw_matchsticks', exp_id=user.timestamp, camera_id=camera_id ) }} target="_blank">Do it!</a>
+  {% endfor %}
+
+  <h2>Make Video from Drawings</h2>
+  {% for camera_id in range(user.camera): %}
+    Camera {{ camera_id }}: <a href={{ url_for('make_videofrom_matchsticks', exp_id=user.timestamp, camera_id=camera_id, fps=10) }} target="_blank">Do it!</a>
+  {% endfor %}
+  <hr>
+
   <h2>Computer Vision</h2>
   <p><a href={{ url_for('make_thumbnails', exp_id=user.timestamp) }} target="_blank">Make Thumbnails and Extract
       Features</a></p>

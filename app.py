@@ -22,6 +22,7 @@ from pose_detection import pose_detection
 from utils import utils
 from tf.tf import TFTree
 from skeleton.skeleton import people, skeleton
+import visualization
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -181,9 +182,18 @@ class flask_app(object):
                               "triangulate",
                               self.triangulate)
 
-        self.app.add_url_rule("/test/<int:exp_id>/<int:frame_id>",
-                              "test",
+        self.app.add_url_rule("/draw_matchstick_frame/<int:exp_id>/<int:cam_id>/<int:frame_id>",
+                              "draw_matchstick_frame",
                               self.skeletons)
+
+        self.app.add_url_rule("/draw_matchsticks/<int:exp_id>/<camera_id>",
+                              "draw_matchsticks",
+                              self.draw_matchsticks)
+
+        self.app.add_url_rule("/make_videofrom_matchsticks/<int:exp_id>/<camera_id>/<int:fps>",
+                              "make_videofrom_matchsticks",
+                              self.make_videofrom_matchsticks)
+                              
 
         self.app.view_functions['index'] = self.index
         self.app.view_functions['video'] = self.video
@@ -214,7 +224,9 @@ class flask_app(object):
         self.app.view_functions['match_people'] = self.match_people
         self.app.view_functions['make_thumbnails'] = self.make_thumbnails
         self.app.view_functions['triangulate'] = self.triangulate
-        self.app.view_functions['test'] = self.skeletons
+        self.app.view_functions['draw_matchstick_frame'] = self.skeletons
+        self.app.view_functions['draw_matchsticks'] = self.draw_matchsticks
+        self.app.view_functions['make_videofrom_matchsticks'] = self.make_videofrom_matchsticks
 
 
     def index(self):
@@ -642,26 +654,137 @@ class flask_app(object):
 
         return "{n} number of images were processed!".format(n=n)
 
-    def skeletons(self, exp_id, frame_id):
-        """Test skeletons."""
-
+    def make_videofrom_matchsticks(self, exp_id, camera_id, fps):
+        """
+        """
+        v = visualization.visualization()
         exp = experiment.experiment(new_experiment=False, ts=exp_id)
+        room_name = exp.metadata["room"]
+
+        if room_name.lower() == "cears":
+            room_id = 1
+        elif room_name.lower() == "computer_lab":
+            room_id = 0
+
+        devices = self.rooms[room_id]["devices"]
+        devices.sort()
+        try:
+            cam_name = os.path.basename(devices[int(camera_id)])
+        except Exception as e:
+            print e
+            return "No cam found sorry!a"
+
+        fcamera_path = os.path.join("/dev/v4l/by-id", cam_name)
+        nframes = exp.metadata["number_of_images"][fcamera_path]
         exp_path = self.um.experiment_path(str(exp_id))
-        pose_detection_result = "output/pose/pose"
-        cam_name = os.path.basename("/dev/v4l/by-id/usb-046d_Logitech_Webcam_C930e_23C6957E-video-index0")  # noqa: E501
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        pathout = os.path.join(exp_path, "output/pose/video")
+
+        try:
+            self.um.create_folder(pathout)
+        except:
+            pass
+
+        pathout = os.path.join(pathout, cam_name)
+        
+        try:
+            self.um.create_folder(pathout)
+        except:
+            pass
+
+        pathout = os.path.join(pathout, "video.mp4")
+        print pathout
+        out = cv2.VideoWriter(pathout, fourcc, fps, (800, 600))
+
+        for frame_id in range(nframes):
+            figure = os.path.join(exp_path,
+                                  "output/pose/img",
+                                  cam_name,
+                                  "matchstick_" + str(frame_id) + ".png")
+            img_ = cv2.imread(figure)
+            
+            if img_ is None:
+
+                return "I think you forgot to draw the matchsticks!"
+            cv2.resize(img_, (800, 600))
+            out.write(img_)
+
+        out.release()
+            
+        return "done"
+    
+    def draw_matchsticks(self, exp_id, camera_id):
+        """
+        """
+        v = visualization.visualization()
+        exp = experiment.experiment(new_experiment=False, ts=exp_id)
+        room_name = exp.metadata["room"]
+
+        if room_name.lower() == "cears":
+            room_id = 1
+        elif room_name.lower() == "computer_lab":
+            room_id = 0
+
+        devices = self.rooms[room_id]["devices"]
+        devices.sort()
+        try:
+            cam_name = os.path.basename(devices[int(camera_id)])
+        except Exception as e:
+            print e
+            return "No cam found sorry!a"
+
+        fcamera_path = os.path.join("/dev/v4l/by-id", cam_name)
+        nframes = exp.metadata["number_of_images"][fcamera_path]
+        ret_combined = ""
+        for frame_id in range(nframes):
+            ret = self.skeletons(exp_id, camera_id, frame_id)
+            ret_combined += "<br>" + ret
+        return ret_combined
+
+    def skeletons(self, exp_id, cam_id, frame_id):
+        """Test skeletons."""
+        visualizer = visualization.visualization()
+        exp = experiment.experiment(new_experiment=False, ts=exp_id)
+        room_name = exp.metadata["room"]
+        if room_name.lower() == "cears":
+            room_id = 1
+        elif room_name.lower() == "computer_lab":
+            room_id = 0
+
+        devices = self.rooms[room_id]["devices"]
+        devices.sort()
+        try:
+            cam_name = os.path.basename(devices[int(cam_id)])
+        except:
+            return "No cam found sorry!"
+
+        exp_path = self.um.experiment_path(str(exp_id))
+        pose_detection_result = "output/pose"
+        json = "pose"
+        img = "img"
         fname = os.path.join(exp_path,
                              pose_detection_result,
+                             json,
                              cam_name,
                              str(frame_id)+".png.json")
+
+        
+        output_fname = os.path.join(exp_path,
+                                    pose_detection_result,
+                                    img,
+                                    cam_name,
+                                    "matchstick_" + str(frame_id) + ".png")
+        print fname
 
         if self.um.check_file_exists(fname):
             json_data = self.um.read_json(fname)
             people_in_frame = people(json_data, frame_id)
+            visualizer.draw_matchsticks(people_in_frame, output_fname)
             npeople = str(len(people_in_frame.list))
         else:
             npeople = 0
 
-        return "Number of people found: {n}".format(n=npeople)
+        return "Number of people drawn: {n}".format(n=npeople)
 
     def triangulate(self, exp_id):
         """Triangulate people's locations."""
