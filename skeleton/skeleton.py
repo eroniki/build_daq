@@ -51,6 +51,7 @@ class skeleton(object):
                                    [16, 18],
                                    [19, 20],
                                    [22, 23]])
+        self.bone_colors = np.random.rand(len(self.bone_list), 3, 1)
 
         self.names = ["Nose", "Neck", "RShoulder", "RElbow", "RWrist",
                       "LShoulder", "LElbow", "LWrist", "MidHip",
