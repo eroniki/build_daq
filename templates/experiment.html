@@ -36,8 +36,7 @@
     Assign/Update label: <input type="text" name="label" value="{{ user.label }}"><input type="submit" value="Submit">
   </form>
   <p><a href={{ url_for('delete_experiment', exp_id=user.timestamp) }} target="_blank">Delete Experiment</a></p>
-  <p><a href={{ url_for('compress_experiment', exp_id=user.timestamp) }} target="_blank">Create an Archive from
-      Experiment Data</a> |
+  <p><a href={{ url_for('compress_experiment', exp_id=user.timestamp) }} target="_blank">Create an Archive from Experiment Data</a> |
     Already Archived: <img src="{{ url_for('static', filename=user.image) }}" alt="Status"></p>
   <p><a href={{ url_for('delete_archive', exp_id=user.timestamp) }} target="_blank">Delete Archive</a></p>
   <p><a href={{ url_for('clone_experiment', id=user.timestamp) }} target="_blank">Move data to cloud</a></p>
@@ -59,6 +58,7 @@
   <h2>Make Video from Drawings</h2>
   {% for camera_id in range(user.camera): %}
     Camera {{ camera_id }}: <a href={{ url_for('make_videofrom_matchsticks', exp_id=user.timestamp, camera_id=camera_id, fps=10) }} target="_blank">Do it!</a>
+    <a href={{ url_for('get_matchstick_video', exp_id=user.timestamp, camera_id=camera_id) }} target="_blank">Get the Video!</a>
   {% endfor %}
   <hr>
 
