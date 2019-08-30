@@ -13,6 +13,7 @@ import os
 
 import flask
 from flask import Flask, render_template, Response, request, make_response
+from flask import send_file, send_from_directory
 
 import flask_login
 
@@ -193,7 +194,10 @@ class flask_app(object):
         self.app.add_url_rule("/make_videofrom_matchsticks/<int:exp_id>/<camera_id>/<int:fps>",
                               "make_videofrom_matchsticks",
                               self.make_videofrom_matchsticks)
-                              
+
+        self.app.add_url_rule("/get_matchstick_video/<int:exp_id>/<camera_id>",
+                              "get_matchstick_video",
+                              self.get_matchstick_video)
 
         self.app.view_functions['index'] = self.index
         self.app.view_functions['video'] = self.video
@@ -227,6 +231,8 @@ class flask_app(object):
         self.app.view_functions['draw_matchstick_frame'] = self.skeletons
         self.app.view_functions['draw_matchsticks'] = self.draw_matchsticks
         self.app.view_functions['make_videofrom_matchsticks'] = self.make_videofrom_matchsticks
+        self.app.view_functions['get_matchstick_video'] = self.get_matchstick_video
+
 
 
     def index(self):
@@ -677,7 +683,7 @@ class flask_app(object):
         fcamera_path = os.path.join("/dev/v4l/by-id", cam_name)
         nframes = exp.metadata["number_of_images"][fcamera_path]
         exp_path = self.um.experiment_path(str(exp_id))
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        fourcc = cv2.VideoWriter_fourcc(*'XVID')
         pathout = os.path.join(exp_path, "output/pose/video")
 
         try:
@@ -692,7 +698,7 @@ class flask_app(object):
         except:
             pass
 
-        pathout = os.path.join(pathout, "video.mp4")
+        pathout = os.path.join(pathout, "video.avi")
         print pathout
         out = cv2.VideoWriter(pathout, fourcc, fps, (800, 600))
 
@@ -712,7 +718,39 @@ class flask_app(object):
         out.release()
             
         return "done"
-    
+
+    def get_matchstick_video(self, exp_id, camera_id):
+        """
+        """
+        exp = experiment.experiment(new_experiment=False, ts=exp_id)
+        room_name = exp.metadata["room"]
+
+        if room_name.lower() == "cears":
+            room_id = 1
+        elif room_name.lower() == "computer_lab":
+            room_id = 0
+
+        devices = self.rooms[room_id]["devices"]
+        devices.sort()
+        try:
+            cam_name = os.path.basename(devices[int(camera_id)])
+        except Exception as e:
+            print e
+            return "No cam found sorry!"
+
+        fcamera_path = os.path.join("/dev/v4l/by-id", cam_name)
+        nframes = exp.metadata["number_of_images"][fcamera_path]
+        exp_path = self.um.experiment_path(str(exp_id))
+        pathout = os.path.join(exp_path, "output/pose/video")
+        pathout = os.path.join(pathout, cam_name)
+
+        try:
+            return send_from_directory(pathout, filename="video.avi",
+                                       as_attachment=True,
+                                       mimetype='video/x-msvideo')
+        except Exception as e:
+            return str(e)
+
     def draw_matchsticks(self, exp_id, camera_id):
         """
         """
