@@ -43,6 +43,14 @@
 
   <p></p>
   </form>
+
+  <hr />
+  <h1>System Logs</h1>
+  {% if current_user.is_authenticated %}
+  <p>
+    {{log|safe}}
+  </p>
+  {% endif %}
 </body>
 
 </html>
