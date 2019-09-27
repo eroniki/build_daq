@@ -10,6 +10,7 @@ import json
 import sys
 import time
 import os
+import sys
 
 import flask
 from flask import Flask, render_template, Response, request, make_response
@@ -60,17 +61,23 @@ class flask_app(object):
                                     child=elem["right"],
                                     xform=elem["matrix"])
 
+        if not self.um.check_folder_exists("logs"):
+            self.um.create_folder("logs")
+
         handler = RotatingFileHandler(
             'logs/status.log', maxBytes=10000, backupCount=99)
         formatter = logging.Formatter(
             "[%(asctime)s] {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s")
-        handler.setLevel(logging.DEBUG)
+        handler.setLevel(logging.INFO)
         handler.setFormatter(formatter)
+        
+        self.app.logger = logging.getLogger("STDOUT")
         self.app.logger.addHandler(handler)
+        self.app.logger.setLevel(logging.INFO)
 
-        log = logging.getLogger('werkzeug')
-        log.setLevel(logging.DEBUG)
-        log.addHandler(handler)
+        # stdout_logger = self.app.logger.getLogger('STDOUT')
+        sl = StreamToLogger(self.app.logger, logging.INFO)
+        sys.stdout = sl
 
         self.create_endpoints()
 
@@ -234,10 +241,10 @@ class flask_app(object):
         self.app.view_functions['get_matchstick_video'] = self.get_matchstick_video
 
 
-
     def index(self):
         """Render the homepage."""
-        return render_template('index.html')
+        log = self.log_n(10)
+        return render_template('index.html', log=log)
 
     @flask_login.login_required
     def video(self, room_name):
@@ -476,6 +483,9 @@ class flask_app(object):
         password = self.um.get_md5hash(password)
 
         print email, password
+        self.app.logger.error("User {user} logged in!".format(user=email))
+        if not self.um.check_file_exists("users.json"):
+            return "Please create a users.json file"
 
         if email in self.users:
             if self.users[email]['password'] == password:
@@ -493,6 +503,7 @@ class flask_app(object):
     def logout(self):
         """Logout from the system."""
         flask_login.logout_user()
+        self.app.logger.info("User logged out!")
         return 'Logged out'
 
     @flask_login.login_required
@@ -502,6 +513,9 @@ class flask_app(object):
 
     def user_loader(self, email):
         """Check if the user in the user.json file."""
+        if not self.um.check_file_exists("users.json"):
+            return
+
         if email not in self.users:
             return
 
@@ -542,6 +556,7 @@ class flask_app(object):
         camera_name = os.path.basename(devices[camera_id])
         fname = os.path.join("data", exp_id, "raw",
                              camera_name, str(img_id) + ".png")
+        self.app.logger.info(fname)
         retval = pd.detect_pose(fname)
         if isinstance(retval, str):
             return retval
@@ -551,6 +566,7 @@ class flask_app(object):
             print buffer.shape
             response = make_response(buffer.tobytes())
             response.headers['Content-Type'] = 'image/png'
+        self.app.logger.info(response)
         return response
 
     def pose_cam(self, exp_id, camera_id):
@@ -575,6 +591,8 @@ class flask_app(object):
         fname_result_joint = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                           "data", exp_id, "output", "pose", "pose",
                                           str(camera_name))
+
+        self.app.logger.info(fname_result_joint)
         try:
             self.um.create_folder(fname_result_joint)
         except:
@@ -598,8 +616,9 @@ class flask_app(object):
         else:
             return "Experiment {id} was not found".format(id=exp_id)
 
-        print "{n} number of images were found!".format(n=n)
-
+        st = "{n} number of images were found!".format(n=n)
+        print st
+        self.app.logger.info(st)
         img_files.sort()
         for idx, fname in enumerate(img_files):
 
@@ -622,6 +641,8 @@ class flask_app(object):
                 self.um.dump_json(fname=fname_json,
                                   data=joints.tolist(),
                                   pretty=True)
+                self.app.logger.info(fname_img)
+                print fname_img
                 camera_name_full = "/dev/v4l/by-id/" + camera_name
                 exp.update_metadata(change_pd=True, pd={camera_name_full: idx})
 
@@ -678,7 +699,8 @@ class flask_app(object):
             cam_name = os.path.basename(devices[int(camera_id)])
         except Exception as e:
             print e
-            return "No cam found sorry!a"
+            self.app.logger.info(e)
+            return "No cam found sorry!"
 
         fcamera_path = os.path.join("/dev/v4l/by-id", cam_name)
         nframes = exp.metadata["number_of_images"][fcamera_path]
@@ -700,6 +722,7 @@ class flask_app(object):
 
         pathout = os.path.join(pathout, "video.avi")
         print pathout
+        self.app.logger.info(pathout)
         out = cv2.VideoWriter(pathout, fourcc, fps, (800, 600))
 
         for frame_id in range(nframes):
@@ -707,6 +730,7 @@ class flask_app(object):
                                   "output/pose/img",
                                   cam_name,
                                   "matchstick_" + str(frame_id) + ".png")
+            self.app.logger.info(figure)
             img_ = cv2.imread(figure)
             
             if img_ is None:
@@ -736,6 +760,7 @@ class flask_app(object):
             cam_name = os.path.basename(devices[int(camera_id)])
         except Exception as e:
             print e
+            self.app.logger.info(e)
             return "No cam found sorry!"
 
         fcamera_path = os.path.join("/dev/v4l/by-id", cam_name)
@@ -769,7 +794,8 @@ class flask_app(object):
             cam_name = os.path.basename(devices[int(camera_id)])
         except Exception as e:
             print e
-            return "No cam found sorry!a"
+            self.app.logger.info(e)
+            return "No cam found sorry!"
 
         fcamera_path = os.path.join("/dev/v4l/by-id", cam_name)
         nframes = exp.metadata["number_of_images"][fcamera_path]
@@ -813,6 +839,7 @@ class flask_app(object):
                                     cam_name,
                                     "matchstick_" + str(frame_id) + ".png")
         print fname
+        self.app.logger.info(fname)
 
         if self.um.check_file_exists(fname):
             json_data = self.um.read_json(fname)
@@ -855,6 +882,25 @@ class User(flask_login.UserMixin):
     # TODO: Implement this
     pass
 
+
+class StreamToLogger(object):
+    """
+    Fake file-like stream object that redirects writes to a logger instance.
+    """
+
+    def __init__(self, logger, log_level=logging.INFO):
+        self.logger = logger
+        self.log_level = log_level
+        self.linebuf = ''
+
+    def write(self, buf):
+        for line in buf.rstrip().splitlines():
+            self.logger.log(self.log_level, line.rstrip())
+
+
+    def flush(self):
+        for handler in self.logger.handlers:
+            handler.flush()
 
 if __name__ == '__main__':
     pass
