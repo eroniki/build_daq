@@ -25,6 +25,7 @@ from utils import utils
 from tf.tf import TFTree
 from skeleton.skeleton import people, skeleton
 import visualization
+from computer_vision import computer_vision
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -54,6 +55,8 @@ class flask_app(object):
         self.login_manager.request_loader(self.request_loader)
 
         self.extrinsic_dict = self.load_extrinsics()
+        self.K, self.d = self.load_intrinsics()
+
         self.xform_tree = TFTree()
 
         for elem in self.extrinsic_dict["extrinsic_params"]:
@@ -84,6 +87,13 @@ class flask_app(object):
     def load_extrinsics(self):
         """Load extrinsic matrices from a json file."""
         return self.um.read_json("extrinsics.json")
+
+    def load_intrinsics(self):
+        """Load intrinsic parameters from a json file."""
+        data = self.um.read_json("intrinsics.json")
+        K = np.asarray(data["K"])
+        d = np.asarray(data["dist"])
+        return K, d
 
     def load_users(self):
         """Load users for authorization purposes from the json file."""
@@ -206,6 +216,10 @@ class flask_app(object):
                               "get_matchstick_video",
                               self.get_matchstick_video)
 
+        self.app.add_url_rule("/locate_camera/<exp_id>/<left_cam_id>/<right_cam_id>/<frame_id>",
+                              "locate_camera_frame",
+                              self.locate_camera_frame)
+
         self.app.view_functions['index'] = self.index
         self.app.view_functions['video'] = self.video
         self.app.view_functions['video_feed'] = self.video_feed
@@ -239,6 +253,8 @@ class flask_app(object):
         self.app.view_functions['draw_matchsticks'] = self.draw_matchsticks
         self.app.view_functions['make_videofrom_matchsticks'] = self.make_videofrom_matchsticks
         self.app.view_functions['get_matchstick_video'] = self.get_matchstick_video
+        self.app.view_functions['locate_camera_frame'] = self.locate_camera_frame
+
 
 
     def index(self):
@@ -876,6 +892,83 @@ class flask_app(object):
         for line in lines:
             statement += (line + "<br />")
         return statement
+
+
+    @flask_login.login_required
+    def locate_camera_frame(self, exp_id, left_cam_id, right_cam_id, frame_id):
+        """Locate the camera with respect to the checkerboard."""
+        return Response(self.gen_locate_camera_frame(exp_id,
+                                                     left_cam_id, right_cam_id,
+                                                     frame_id),
+                        mimetype='multipart/x-mixed-replace; boundary=frame')
+
+    def gen_locate_camera_frame(self, exp_id, left_cam_id, right_cam_id, frame_id):
+        """Camera generator for the test_camera endpoint."""
+        exp = experiment.experiment(new_experiment=False, ts=str(exp_id))
+        room_name = exp.metadata["room"]
+        if room_name.lower() == "cears":
+            room_id = 1
+        elif room_name.lower() == "computer_lab":
+            room_id = 0
+
+        devices = self.rooms[room_id]["devices"]
+        devices.sort()
+
+        fname = str(frame_id) + ".png"
+
+        l_camera_name = os.path.basename(devices[int(left_cam_id)])
+        r_camera_name = os.path.basename(devices[int(right_cam_id)])
+
+        path_l = os.path.join(self.um.experiment_path(exp_id), "raw", l_camera_name, fname)  # noqa: E501
+
+        path_r = os.path.join(self.um.experiment_path(exp_id), "raw", r_camera_name, fname)  # noqa: E501
+
+        frame_l = cv2.imread(path_l, )
+        frame_r = cv2.imread(path_r, )
+
+        retval = True
+
+        if frame_l is None:
+            frame_l = cv2.imread("flask_app/static/task.jpg")
+            ret_val = False
+
+        if frame_r is None:
+            frame_r = cv2.imread("flask_app/static/task.jpg")
+            ret_val = False
+
+        pattern_shape = (9, 6)  # TODO: CHECK THIS
+        grid_size = 30  # TODO: CHECK THIS
+        text_l, corners_l, canvas_l, R_l, t_l = computer_vision.calculate_camera_pose(frame_l, self.K, self.d, pattern_shape=pattern_shape, grid_size=grid_size)  # noqa: E501
+        text_r, corners_r, canvas_r, R_r, t_r = computer_vision.calculate_camera_pose(frame_r, self.K, self.d, pattern_shape=pattern_shape, grid_size=grid_size)  # noqa: E501
+        
+        T_l = np.eye(4)
+        T_r = np.eye(4)
+        if R_l is not None and R_r is not None:
+            T_l[0:3, 0:3] = R_l
+            T_r[0:3, 0:3] = R_r
+            T_l[0:3, 3] = t_l.ravel()
+            T_r[0:3, 3] = t_r.ravel()
+
+            T_l = np.eye(4)
+            T_r = np.linalg.inv(T_l).dot(T_r)
+
+        print T_l
+        print T_r
+        canvas = np.hstack([canvas_l, canvas_r])
+
+        text = "Left: " + text_l + " Right: " + text_r
+        cv2.putText(canvas, text, (20, 40), cv2.FONT_HERSHEY_SIMPLEX,
+                    1.0, (0, 0, 255), lineType=cv2.LINE_AA)
+
+        ret, jpeg = cv2.imencode('.jpg', canvas)
+
+        if ret:
+            img = jpeg.tobytes()
+        else:
+            pass
+
+        yield (b'--frame\r\n'
+               b'Content-Type: image/png;base64,\r\n\r\n' + img + b'\r\n')
 
 
 class User(flask_login.UserMixin):
