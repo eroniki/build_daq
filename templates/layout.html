@@ -1,0 +1,60 @@
+{% from "macros.html" import nav_link with context %}
+{% from "macros.html" import nav_link_ajax with context %}
+{% from "macros.html" import toast with context %}
+<!DOCTYPE html>
+<html lang="en">
+{% include "head.html" %}
+
+<body>
+    {% include "header.html" %}
+    <!-- UI Dialog Modal -->
+    <div class="modal fade" id="ui_dialog_modal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="result_container">
+                    <div class="spinner-grow" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Toasts -->
+    <div aria-live="polite" aria-atomic="true" class="float-xl-right">
+        <div id="toast_container"
+            style="position: absolute; width: 300px; top: 10px; right: 10px; z-index: 1000 !important"></div>
+    </div>
+    <!-- Main UI Component -->
+    <!-- <div class="container">
+        <div class="jumbotron">
+            <h1 class="display-4" id="content_title">Hello, world!</h1>
+            <p class="lead" id="content_body">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to
+                featured content or information.</p>
+            <hr class="my-4">
+            <p id="content_sub">It uses utility classes for typography and spacing to space content out within the larger container.</p>
+            <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+            <a class="btn btn-danger btn-lg" href="#" role="button">Danger!</a>
+            <a class="btn btn-dark btn-lg" href="#" role="button">Dark</a>
+        </div>
+    </div> -->
+    
+    <!-- Start content-->
+    <div class="container">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <!-- End of Content -->
+    {% include "footer.html" %}
+</body>
+
+</html>

@@ -1,18 +1,98 @@
-<!doctype html>
-<html>
+{% extends "layout.html" %}
+{% block content %}
+{% if user|count == 0 %}
+<div id="exp_warning" class="alert alert-danger" role="alert">
+    No experiment is found!
+    <button id="close_exp_warning" type="button" class="ml-2 mb-1 close" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% else %}
+<div id="exp_warning" class="alert alert-primary" role="alert">
+    {{ user|length }} experiments were found!
+    <button id="close_exp_warning" type="button" class="ml-2 mb-1 close" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endif %}
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        <div class="input-group-text">
+            <input id="select_all_check" type="checkbox">
+            &nbsp; All
+        </div>
+    </div>
+    <input type="text" size="50" class="form-control w-20" placeholder="Label"
+        aria-label="Experiment Label" aria-describedby="button-addon4">
+    <div class="input-group-append" id="button-addon4">
+        <button class="btn btn-outline-secondary" type="button">Change Labels</button>
+        <button class="btn btn-outline-primary" type="button">Backup</button>
+        <button class="btn btn-outline-danger" type="button">Delete</button>
+    </div>
+</div>
 
-<head>
-  <title>List of Experiments</title>
-  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}">
-</head>
+<table id="experiments_table" class="table table-hover table-striped text-center">
+    <thead>
+        <tr class="table-primary">
+            <th scope="col">Select</th>
+            <th scope="col">Experiment ID</th>
+            <th scope="col">Date Time</th>
+            <th scope="col">Quick Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for exp in pagination_experiments %}
+        <tr>
+            <td><input type="checkbox" class="check" id="{{ exp.ts }}" /></td>
+            <td><a href="{{ url_for('check_experiment', id=exp.ts) }}">{{ exp.ts }}</a></td>
+            <td>{{ exp.date }}</td>
+            <td>
+                <form id="{{ exp.ts }}_form">
+                    <div class="input-group">
+                        <input type="text" class="form-control" size="10" name="label" placeholder="Label: {{ exp.label }}">
+                        <div class="input-group-append">
+                            <a class="btn btn-secondary experiment_action" type="button" id="{{ exp.ts }}_label"
+                                href="{{ url_for('label_experiment', exp_id=exp.ts) }}">Change Label</a>
+                            <a class="btn btn-primary experiment_action" type="button"id="{{ exp.ts }}_backup"
+                                href="{{ url_for('backup_experiment', exp_id=exp.ts) }}">Backup</a>
+                            <a class="btn btn-danger experiment_action" type="button" id="{{ exp.ts }}_delete"
+                                href="{{ url_for('delete_experiment', exp_id=exp.ts) }}">Delete</a>
+                        </div>
+                    </div>
+                </form>
+            </td>
+            <!-- <td>
+                <form action="{{ url_for('delete_experiment', exp_id=exp.ts) }}" target="_blank"
+                    class="form-group delete_experiment_form">
+                    <button class="btn btn-secondary" role="button" data-toggle="confirmation"
+                        data-placement="bottom" data-title="Are you sure?" disabled>
+                        Backup
+                    </button>
+                </form>
+            </td>
+            <td>
+                <form action="{{ url_for('delete_experiment', exp_id=exp.ts) }}" target="_blank"
+                    name="delete_experiment_form" class="form-group">
+                    <button class="btn btn-danger" role="button" id="{{ exp.ts }}" data-toggle="ui_dialog_modal"
+                        data-placement="bottom" data-title="Are you sure?">
+                        Delete the Experiment
+                    </button>
+                </form>
+            </td> -->
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div>
+    {{ pagination.links }}
+</div>
 
-<body>
-  <h1>List of Experiments</h1><br />
-  <ol id="navigation">
-    {% for exp in user %}
-    <li><a href="{{ url_for('check_experiment', id=exp.ts) }}">{{ exp.ts }}</a> - Date: {{ exp.date }} Label: {{ exp.label }}</li>
-    {% endfor %}
-  </ol>
-</body>
-
-</html>
+<script>
+    $("#checkk").click(function (event) {
+        event.preventDefault();
+        var searchIDs = $("input:checkbox:checked").map(function () {
+            return $(this).val();
+        }).get(); // <----
+    });
+</script>
+{% endblock %}

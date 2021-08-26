@@ -1,0 +1,52 @@
+{% macro nav_link(endpoint, name, icon) %}
+{% if request.endpoint.endswith(endpoint) %}
+<li class="nav-item active">
+    <a href="{{ url_for(endpoint) }}" class="nav-link">
+        <i class="{{ icon }}"></i>
+        {{ name }}
+    </a>
+</li>
+{% else %}
+<li class="nav-item">
+    <a href="{{ url_for(endpoint) }}" class="nav-link">
+        <i class="{{ icon }}"></i>
+        {{ name }}
+    </a>
+</li>
+{% endif %}
+{% endmacro %}
+
+{% macro nav_link_ajax(name, icon, id) %}
+<li class="nav-item">
+    <a href="#" id="#{{ id }}" class="nav-link sys_link">
+        <i class="{{ icon }}"></i>
+        {{ name }}
+    </a>
+</li>
+{% endmacro %}
+
+{% macro nav_link_request(name, icon, id="") %}
+<li class="nav-item">
+    <a href="#" class="nav-link" data-toggle="modal" data-target="#ui_dialog_modal">
+        <i class="{{ icon }}"></i>
+        {{ name }}
+    </a>
+</li>
+{% endmacro %}
+
+{% macro toast(title, message, time) %}
+<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide=false>
+    <div class="toast-header">
+        <img src="..." class="rounded mr-2" alt="...">
+        <strong class="mr-auto">{{ title }}</strong>
+        <small class="text-muted">{{ time }}</small>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="toast-body">
+        {{ message }}
+    </div>
+</div>
+{% endmacro %}
+
