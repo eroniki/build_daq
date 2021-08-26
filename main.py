@@ -1,10 +1,9 @@
 from app import flask_app
 
 
-def main():
-    fa = flask_app("asda")
-    fa.app.run(host='0.0.0.0', debug=True)
-
-
 if __name__ == '__main__':
-    main()
+    context = {"users": "users.json",
+               "devices": "devices.json",
+               "log": False}
+    fa = flask_app(context, key="adas")
+    fa.app.run(host='0.0.0.0', debug=True)

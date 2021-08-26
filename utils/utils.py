@@ -50,6 +50,8 @@ class misc(object):
                 for name in dirs:
                     os.rmdir(os.path.join(root, name))
             os.rmdir(folder)
+        else:
+            raise IOError("{x} was not found!".format(x=folder))
 
     @staticmethod
     def delete_file(file):
@@ -106,6 +108,10 @@ class misc(object):
                 json.dump(data, outfile, indent=4, sort_keys=True)
             else:
                 json.dump(data, outfile)
+
+    @staticmethod
+    def json_dumps(data):
+        return json.dumps(data)
 
     @staticmethod
     def get_md5hash(foo):
@@ -176,8 +182,8 @@ class misc(object):
     @staticmethod
     def run_process(cmd):
         """Run a process and receives its return value."""
-        result = subprocess.Popen(cmd)
-        return result.poll()
+        process = subprocess.Popen(cmd)
+        return process
 
 
 if __name__ == '__main__':

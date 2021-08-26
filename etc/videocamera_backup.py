@@ -1,71 +1,6 @@
-"""
-This module contains a class which is used for video capturing purposes.
+from concurrent.futures import TimeoutError
 
-The VideoCamera class contains all the functions and utilities needed in the
-actual image acquisition process.
-"""
-import cv2
-import numpy as np
-import os
-import experiment
-import concurrent.futures
-import time
-from threading import Thread
-
-class WebcamVideoStream(object):
-    def __init__(self, src=0, name="WebcamVideoStream", width=320, height=180):
-        self.fps = 3.0
-        self.width = width
-        self.height = height
-        self.frame = np.zeros([width, height, 3], dtype=np.uint8)
-        self.stream = cv2.VideoCapture(src)
-        time.sleep(self.fps)
-
-        if self.stream.isOpened():
-            self.stream.set(cv2.CAP_PROP_FPS, 3)
-            self.stream.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-            self.stream.set(cv2.CAP_PROP_BUFFERSIZE, self.fps)
-            self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-            self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-
-        self.last = time.time()*1000.0
-        # initialize the thread name
-        self.name = name
-        self.stopped = False
-
-    def start(self):
-        # start the thread to read frames from the video stream
-        t = Thread(target=self.update, name=self.name, args=())
-        t.daemon = True
-        t.start()
-        return self
-
-    def update(self):
-        # keep looping infinitely until the thread is stopped
-        while True:
-            # if the thread indicator variable is set, stop the thread
-            if self.stopped:
-                return
-
-            # otherwise, read the next frame from the stream
-            (self.grabbed, self.frame) = self.stream.read()
-            self.last = time.time()*1000.0
-            time.sleep(self.fps)
-
-    def read(self):
-        # return the frame most recently read
-        if self.stopped is True:
-            return None
-        else:
-            return self.frame
-
-    def stop(self):
-        # indicate that the thread should be stopped
-        self.stopped = True
-
-    def __del__(self):
-        self.stream.release()
-class VideoCamera(object):
+class VideoCamera2(object):
     """
     VideoCamera class contains image acquisition system.
 
@@ -84,11 +19,22 @@ class VideoCamera(object):
         self.devices = devices
 
         for dev in devices:
-            print("Accessing:", dev)
+            print "Accessing:", dev
             self.device_ids.append(os.path.basename(dev))
-            cam = WebcamVideoStream(dev, name=dev, width=320, height=180)
-            cam.start()
-            self.cams.append(cam)
+            cam = cv2.VideoCapture(dev)
+            time.sleep(1)
+            if cam.isOpened():
+                cam.set(cv2.CAP_PROP_FPS, 3)
+                cam.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+                cam.set(cv2.CAP_PROP_BUFFERSIZE, 3)
+                cam.set(cv2.CAP_PROP_FRAME_WIDTH, 848)
+                cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+                self.cams.append(cam)
+                print dev, "is opened", cam.get(
+                    cv2.CAP_PROP_FRAME_HEIGHT), " ", cam.get(cv2.CAP_PROP_FRAME_WIDTH)
+            else:
+                print "error in", dev
+            self.img_id[dev] = 0
 
     def __del__(self):
         """Delete object to release the cameras.
@@ -97,7 +43,7 @@ class VideoCamera(object):
         the webpage is closed.
         """
         for cam in self.cams:
-            del cam
+            cam.release()
 
         self.exp.update_metadata(change_image_number=True,
                                  n_images=self.img_id)
@@ -118,28 +64,51 @@ class VideoCamera(object):
             return jpeg.tobytes()
 
         frames = list()
+        cam_idx = list()
+
+        executor = concurrent.futures.ThreadPoolExecutor()
+        self.iterator = executor.map(
+            VideoCamera.get_frame, enumerate(self.cams), timeout=4)
+
+        while True:
+            try:
+                frame, cam_id = next(self.iterator)
+                cam_idx.append(cam_id)
+                frames.append(frame)
+            except StopIteration:
+                break
+            except TimeoutError as error:
+                print "function took longer"
+                frames.append(None)
+                cam_idx.append(None)
+            except Exception as e:
+                print e
+                frames.append(None)
+                cam_idx.append(None)
+
+        for frame, cam_id in zip(frames, cam_idx):
+            if frame is not None:
+                self.save_img(frame, self.device_ids[cam_id], img_id)
+
         frames_resized_list = list()
-
-        for cam_id, cam in enumerate(self.cams):
-            if time.time()*1000.0 - cam.last > 10000:
-                frame = cam.read()
-            else:
-                cam.stop()
-                frame = np.zeros_like(cam.frame)
-            frames.append(frame)
-
         for frame in frames:
             try:
-                frame_resized = cv2.resize(frame, (160, 90))
-                self.save_img(frame, self.device_ids[cam_id], img_id)
+                frame_resized = cv2.resize(frame, (128, 96))
             except:
-                frame_resized = np.zeros((90, 160, 3), dtype=np.uint8)
+                frame_resized = np.zeros((96, 128, 3), dtype=np.uint8)
 
             frames_resized_list.append(frame_resized)
 
         frame_montage = np.concatenate(frames_resized_list, axis=1)
         ret, jpeg = cv2.imencode('.jpg', frame_montage)
         return jpeg.tobytes()
+
+    @staticmethod
+    def get_frame(cam_props):
+        """Given a cam object, read one image and return it."""
+        cam_id, cam = cam_props
+        _, image = cam.read()
+        return image, cam_id
 
     def save_img(self, img, cam_id, img_id):
         """
@@ -152,6 +121,7 @@ class VideoCamera(object):
         """
         data_loc = os.path.join("data/", self.exp_id, "raw", str(cam_id))
         if os.path.isdir(data_loc):
+            # print "folder already exists"
             pass
         else:
             print "create folder"

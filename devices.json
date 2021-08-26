@@ -1,6 +1,7 @@
 {
   "dev_path": "/dev/v4l/by-id/",
-  "rooms": [{
+  "rooms": [
+    {
       "name": "computer_lab",
       "device_list": [
         "usb-046d_Logitech_Webcam_C930e_8843357E-video-index0",
@@ -11,7 +12,6 @@
         "usb-046d_Logitech_Webcam_C930e_BD2F957E-video-index0",
         "usb-046d_Logitech_Webcam_C930e_D3FFA67E-video-index0",
         "usb-046d_Logitech_Webcam_C930e_5FD23C5E-video-index0"
-
       ]
     },
     {
@@ -25,7 +25,6 @@
         "usb-046d_Logitech_Webcam_C930e_8C8B557E-video-index0",
         "usb-046d_Logitech_Webcam_C930e_BBFF617E-video-index0",
         "usb-046d_Logitech_Webcam_C930e_D047957E-video-index0"
-
       ]
     }
   ]

@@ -2,7 +2,10 @@ import glob
 import os
 import cv2
 import numpy as np
-from openpose import OpenPose
+try:
+	from openpose import OpenPose
+except:
+	pass
 import json
 
 
