@@ -1,0 +1,73 @@
+version: "3.9"
+x-service: &service
+  stdin_open: true
+  tty: true
+  init: true
+  env_file:
+    - ".env"
+  restart: "unless-stopped"
+  stop_grace_period: "3s"
+  volumes: 
+    - "code:${CODE_FOLDER_CONTAINER}"
+    - "data:${DATA_FOLDER_CONTAINER}"
+    - "backup:${BACKUP_FOLDER_CONTAINER}"
+
+services:
+  core:
+    <<: *service
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: "${DOCKERHUB_USER}/build-core:${DOCKER_TAG}"
+    container_name: "build-core"
+    ports:
+      - "${FLASK_PORT}"
+    devices:
+      - "/dev/v4l/by-id/usb-046d_Logitech_Webcam_C930e_3B43517E-video-index0:/dev/cam_A"
+      - "/dev/v4l/by-id/usb-046d_Logitech_Webcam_C930e_3B42507E-video-index0:/dev/CEARS/B"
+      - "/dev/v4l/by-id/usb-046d_Logitech_Webcam_C930e_64FE757E-video-index0:/dev/CEARS/C"
+      - "/dev/v4l/by-id/usb-046d_Logitech_Webcam_C930e_7EBB957E-video-index0:/dev/CEARS/D"
+      - "/dev/v4l/by-id/usb-046d_Logitech_Webcam_C930e_845F417E-video-index0:/dev/CEARS/E"
+      - "/dev/v4l/by-id/usb-046d_Logitech_Webcam_C930e_8C8B557E-video-index0:/dev/CEARS/F"
+      - "/dev/v4l/by-id/usb-046d_Logitech_Webcam_C930e_BBFF617E-video-index0:/dev/CEARS/G"
+      - "/dev/v4l/by-id/usb-046d_Logitech_Webcam_C930e_D047957E-video-index0:/dev/CEARS/H"
+  redis:
+      <<: *service
+      image: redis:alpine
+      container_name: build-redis
+
+
+  # openpose:
+  #   build:
+  #     context: .
+  #     dockerfile: openpose.dockerfile
+  #   image: "openpose:${TAG}"
+
+  #   volumes:
+  #     - type: bind
+  #       source: "${ROOT_FOLDER}"
+  #       target: /home/openpose
+
+volumes:
+  code:
+    name: code
+    driver: local
+    driver_opts:
+      device: "${CODE_FOLDER_HOST}"
+      o: bind
+      type: bind
+  data:
+    name: data
+    driver: local
+    driver_opts:
+      device: "${DATA_FOLDER_HOST}"
+      o: bind
+      type: bind
+  backup:
+    name: backup
+    driver: local
+    driver_opts:
+      device: "${BACKUP_FOLDER_HOST}"
+      o: bind
+      type: bind
+  db:

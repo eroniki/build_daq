@@ -1,0 +1,88 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<main class="main-layout">
+    <div class="container">
+        <div class="row justify-content-center">
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">Create Account</div>
+                    <div class="card-body">
+                        
+                        <form action="{{ url_for('admin.create_account') }}" method="POST">
+                            {{ form.csrf_token }}
+                            <div class="form-group row">
+                                <label for="name" class="col-md-4 col-form-label text-md-right">Name</label>
+                                <div class="col-md-6">
+                                    <input type="text" id="name" class="form-control" name="name" value="{{ request.form.name }}" required autofocus>
+                                    {% if form.name.errors %}
+                                        {% for error in form.name.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
+                                <div class="col-md-6">
+                                    <input type="email" id="email" class="form-control" name="email" value="{{ request.form.email }}" required autofocus>
+                                    {% if form.email.errors %}
+                                        {% for error in form.email.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
+                                <div class="col-md-6">
+                                    <input type="password" id="password" class="form-control" name="password" value="{{ request.form.password }}" required>
+                                    {% if form.password.errors %}
+                                        {% for error in form.password.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="confirm_password" class="col-md-4 col-form-label text-md-right">Confirm Password</label>
+                                <div class="col-md-6">
+                                    <input type="password" id="confirm_password" class="form-control" name="confirm_password" required>
+                                    {% if form.confirm_password.errors %}
+                                        {% for error in form.confirm_password.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="user_type" class="col-md-4 col-form-label text-md-right">User Type</label>
+                                <div class="col-md-6">
+                                    {{ form.user_type(class="custom-select") }}
+                                    {% if form.user_type.errors %}
+                                        {% for error in form.user_type.errors %}
+                                            <span class="text-danger">{{ error }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 offset-md-4">
+                                <button type="submit" class="btn btn-primary">Create</button>
+                            </div>
+                        </form>
+                        
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+{% endblock %}

@@ -1,0 +1,63 @@
+<header>
+    <!-- Navbar -->
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-camera2"></i>
+                BUILD DAQ
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <ul class="navbar-nav">
+                    {{ nav_link('index', 'Home', 'bi bi-house-fill') }}
+                    {# {% if current_user.is_authenticated %} #}
+                    {{ nav_link_ajax('System Status', 'bi bi-camera2', "status_rooms") }}
+                    {{ nav_link_ajax('User Management', "bi bi-person-circle", "") }}
+                    {{ nav_link_ajax('Reload Settings', "bi bi-arrow-repeat", "reload_settings") }}
+                    {{ nav_link_ajax('Settings', "bi bi-gear-fill", "") }}
+                    {# {{ nav_link('list_experiments', 'List Experiments', "bi bi-list-check") }} #}
+                    {# {{ nav_link('logout', 'Logout', "bi bi-lock-fill") }} #}
+                    {# {% else %} #}
+                    {# {{ nav_link_ajax('Login', "bi bi-lock-fill", "") }} #}
+                    {# {% endif %} #}
+                    <li class="nav-item">
+                        <span id="clock" class="nav-link" data-toggle="tooltip" data-placement="bottom" title="Server Time"></span> </ul>
+                    </li>
+            </div>
+        </nav>
+    </div>
+    <!-- Breadcrumbs -->
+    {# <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+                {% if request.endpoint.endswith("experiments") %}
+                <li class="breadcrumb-item"><a href="{{ url_for('experiments') }}">Experiment List</a></li>
+                {% endif %}
+                {% if request.endpoint.endswith("check_experiment") %}
+                <li class="breadcrumb-item"><a href="{{ url_for('experiments') }}">Experiment List</a></li>
+                <li class="breadcrumb-item">{{ user.timestamp }}</a></li>
+                {% endif %}
+            </ol>
+        </nav>
+    </div>
+    #}
+</header>
+<!-- 
+<script>
+    $(document).ready(function () {
+        (function server_time() {
+            var clock = document.getElementById("clock");
+            fetch('{{ url_for("system.time_feed") }}')
+                .then(response => {
+                    response.text().then(t => { clock.innerHTML = t })
+                }).then(function () {           // on completion, restart
+                    setTimeout(server_time, 200);  // function refers to itself
+                });
+        })();
+    });
+</script> -->

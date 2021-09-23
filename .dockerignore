@@ -1,0 +1,10 @@
+**/.git
+.vscode/
+scripts/
+data/
+backup/
+*.code-workspace
+docker-compose.yml
+*.dockerfile
+.github/
+.gitlab/

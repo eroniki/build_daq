@@ -1,0 +1,90 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<main class="main-layout">
+    <div class="container">
+        <div class="row justify-content-center">
+
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">List of Users</div>
+                    <div class="card-body">
+                        
+                        <a href="{{ url_for('admin.create_account') }}" class="btn btn-primary mb-3">Create New</a>
+
+                        {% with messages = get_flashed_messages(with_categories=True) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <table id="userTable" class="table table-bordered table-striped table-responsive-sm">
+                            <thead>
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">User Type</th>
+                                    <th scope="col">Date Created</th>
+                                    <th scope="col" data-orderable="false">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in users %}
+                                    <tr>
+                                        <th scope="row">{{ row.id }}</th>
+                                        <td>{{ row.name }}</td>
+                                        <td>{{ row.email }}</td>
+                                        <td>{{ row.role.capitalize() }}</td>
+                                        <td>{{ row.date_created.strftime("%m/%d/%Y") }}</td>
+                                        <td class="text-center">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton{{row.id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton{{row.id}}">
+                                                    <a class="dropdown-item" href="{{ url_for('admin.update_account', id=row.id) }}">Edit</a>
+                                                    <button class="dropdown-item text-danger" data-toggle="modal" data-target="#deleteUserModal{{row.id}}">Delete</button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <div class="modal fade" id="deleteUserModal{{row.id}}" tabindex="-1" aria-labelledby="deleteUserModalLabel{{row.id}}" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="deleteUserModalLabel{{row.id}}">Delete Confirmation</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    Are you sure you want to delete this user? This action cannot be undone.
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                    <form action="{{ url_for('admin.delete_user', id=row.id) }}" method="POST">
+                                                        <input type="submit" class="btn btn-danger" value="Delete">
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+{% endblock %}
