@@ -1,14 +1,10 @@
 name: Docker
 on: push
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Build the stack
-  #       run: docker-compose up -d
-  check:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: piotrpawlaczek/python-blacken@v20.8b1
-      - name: Python Blacken
+      - uses: actions/checkout@v2
+      - name: Build the stack
+        run: docker-compose up -d
