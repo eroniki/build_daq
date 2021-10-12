@@ -1,4 +1,4 @@
-opencv_contrib_python==4.0.0.21
+opencv_contrib_python==4.2.0.32
 numpy==1.16.0
 Flask_Login==0.4.1
 pytz==2018.9
